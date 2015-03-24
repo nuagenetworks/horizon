@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from nuage.dashboards.project.networks.subnets import views
+from nuage.dashboards.project.networks.subnets import tabs
 
 from openstack_dashboard.dashboards.project.networks import urls
 
