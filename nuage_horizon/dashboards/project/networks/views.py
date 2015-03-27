@@ -8,38 +8,40 @@ from openstack_dashboard.dashboards.project.networks import views
 from openstack_dashboard.dashboards.project.networks.ports \
     import tables as port_tables
 from nuage_horizon.dashboards.project.networks import workflows
-from nuage_horizon.dashboards.project.networks.subnets import tables as nuage_sub_tables
+from nuage_horizon.dashboards.project.networks.subnets \
+    import tables as nuage_sub_tables
 from horizon import exceptions
 from horizon import messages
+from nuage_horizon.api import neutron
 
 
 class NuageCreateView(views.CreateView):
     workflow_class = workflows.CreateNetwork
     ajax_template_name = 'nuage/networks/create.html'
 
-    def add_locked_fields(self, workflow, form_data):
+    def add_locked_fields(self, workflow, form_data, step_index):
         """Asks each action if form-fields should become read-only.
 
         Returns a list of tuples (id, locked:boolean) who should be read-only or
         not.
         """
         fields = {}
-        for step in workflow.steps:
-            if hasattr(step.action, 'get_locked_fields'):
-                fields.update(step.action.get_locked_fields(workflow.context,
-                                                            form_data))
+        step = workflow.steps[step_index+1]
+        if hasattr(step.action, 'get_locked_fields'):
+            fields.update(step.action.get_locked_fields(workflow.context,
+                                                        form_data))
         return fields
 
-    def add_hidden_fields(self, workflow):
+    def add_hidden_fields(self, workflow, step_index):
         """Asks each action if form-fields should be hidden or shown.
 
         Returns a list of tuples (id, hidden:boolean) who should be hidden or
         shown.
         """
         fields = {}
-        for step in workflow.steps:
-            if hasattr(step.action, 'get_hidden_fields'):
-                fields.update(step.action.get_hidden_fields(workflow.context))
+        step = workflow.steps[step_index+1]
+        if hasattr(step.action, 'get_hidden_fields'):
+            fields.update(step.action.get_hidden_fields(workflow.context))
         return fields
 
     def add_form_data(self, workflow, step_index, request):
@@ -77,8 +79,10 @@ class NuageCreateView(views.CreateView):
             data['form_data'] = self.add_form_data(workflow, validate_step_end,
                                                    request)
             data['locked_fields'] = self.add_locked_fields(workflow,
-                                                           data['form_data'])
-            data['hidden_fields'] = self.add_hidden_fields(workflow)
+                                                           data['form_data'],
+                                                           validate_step_end)
+            data['hidden_fields'] = self.add_hidden_fields(workflow,
+                                                           validate_step_end)
             return http.HttpResponse(json.dumps(data),
                                      content_type="application/json")
         if not workflow.is_valid():
@@ -109,3 +113,35 @@ class NuageCreateView(views.CreateView):
 
 class NuageDetailView(views.DetailView):
     table_classes = (nuage_sub_tables.NuageSubnetsTable, port_tables.PortsTable)
+
+
+def organizationData(request):
+    org_list = neutron.vsd_organisation_list(request)
+    org_list = [org.to_dict() for org in org_list]
+    response = http.HttpResponse(json.dumps(org_list, ensure_ascii=False))
+    return response
+
+
+def domainData(request):
+    org_id = request.GET.get('org_id', None)
+    dom_list = neutron.vsd_domain_list(request, vsd_organisation_id=org_id)
+    dom_list = [org.to_dict() for org in dom_list]
+    response = http.HttpResponse(json.dumps(dom_list, ensure_ascii=False))
+    return response
+
+
+def zoneData(request):
+    dom_id = request.GET.get('dom_id', None)
+    zone_list = neutron.vsd_zone_list(request, vsd_domain_id=dom_id)
+    zone_list = [zone.to_dict() for zone in zone_list]
+    response = http.HttpResponse(json.dumps(zone_list, ensure_ascii=False))
+    return response
+
+
+def subnetData(request):
+    zone_id = request.GET.get('zone_id', None)
+    subnet_list = neutron.vsd_subnet_list(request,
+                                          vsd_zone_id=zone_id, linked=False)
+    subnet_list = [subnet.to_dict() for subnet in subnet_list]
+    response = http.HttpResponse(json.dumps(subnet_list, ensure_ascii=False))
+    return response

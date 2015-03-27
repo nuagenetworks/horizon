@@ -11,7 +11,14 @@ def should_keep(pattern, name):
 NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
 urls.urlpatterns = [pat for pat in urls.urlpatterns if
                     should_keep(pat, 'addsubnet')]
+urls.urlpatterns = [pat for pat in urls.urlpatterns if
+                    should_keep(pat, 'editsubnet')]
 
 urls.urlpatterns.append(
-    url(NETWORKS % 'subnets/create',views.CreateView.as_view(), name='addsubnet')
+    url(NETWORKS % 'subnets/create',views.CreateView.as_view(),
+        name='addsubnet')
+)
+urls.urlpatterns.append(
+    url(r'^(?P<network_id>[^/]+)/subnets/(?P<subnet_id>[^/]+)/update$',
+        views.UpdateView.as_view(), name='editsubnet')
 )

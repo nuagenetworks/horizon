@@ -2,7 +2,11 @@
 {% load i18n %}
 
 {% block modal-footer %}
-  {% include "nuage/networks/_scripts.html" %}
+  {% if request.user.is_superuser %}
+    <script type="text/javascript">
+      {% include "nuage/networks/_scripts.html" %}
+    </script>
+  {% endif %}
   {% if workflow.wizard %}
   <div class="row">
 

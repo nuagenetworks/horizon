@@ -28,16 +28,16 @@ class CreateView(views.CreateView):
                                                             form_data))
         return fields
 
-    def add_hidden_fields(self, workflow):
+    def add_hidden_fields(self, workflow, step_index):
         """Asks each action if form-fields should be hidden or shown.
 
         Returns a list of tuples (id, hidden:boolean) who should be hidden or
         shown.
         """
         fields = {}
-        for step in workflow.steps:
-            if hasattr(step.action, 'get_hidden_fields'):
-                fields.update(step.action.get_hidden_fields(workflow.context))
+        step = workflow.steps[step_index+1]
+        if hasattr(step.action, 'get_hidden_fields'):
+            fields.update(step.action.get_hidden_fields(workflow.context))
         return fields
 
     def add_form_data(self, workflow, step_index, request):
@@ -76,7 +76,8 @@ class CreateView(views.CreateView):
                                                    request)
             data['locked_fields'] = self.add_locked_fields(workflow,
                                                            data['form_data'])
-            data['hidden_fields'] = self.add_hidden_fields(workflow)
+            data['hidden_fields'] = self.add_hidden_fields(workflow,
+                                                           validate_step_end)
             return http.HttpResponse(json.dumps(data),
                                      content_type="application/json")
         if not workflow.is_valid():
@@ -107,4 +108,3 @@ class CreateView(views.CreateView):
 
 class UpdateView(views.UpdateView):
     workflow_class = nuage_workflows.UpdateSubnet
-    ajax_template_name = 'nuage/networks/create.html'

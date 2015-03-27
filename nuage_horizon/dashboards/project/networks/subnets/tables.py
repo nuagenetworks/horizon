@@ -7,7 +7,7 @@ from horizon import tables
 
 class NuageSubnetsTable(def_tables.SubnetsTable):
     vsd_managed = tables.Column("vsd_managed",
-                                  verbose_name=_("VSD Managed"))
+                                verbose_name=_("VSD Managed"))
 
     def __init__(self, request, data=None, needs_form_wrapper=None, **kwargs):
         super(NuageSubnetsTable, self).__init__(request, data,

@@ -1,7 +1,6 @@
 import logging
 
 from nuage_horizon.api import neutron
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from openstack_dashboard.dashboards.project.networks import \
@@ -14,6 +13,17 @@ from horizon import base
 
 
 LOG = logging.getLogger(__name__)
+
+
+class UnsafeChoiceField(forms.ChoiceField):
+    """
+    This is an extension of the default choicefield with the exception that it
+    will not validate that the value in the POST request matches the value
+    during rendering of the Choicefield (In case Javascript alters the values
+    client-side)
+    """
+    def validate(self, value):
+        pass
 
 
 class CreateSubnetTypeAction(workflows.Action):
@@ -31,7 +41,7 @@ class CreateSubnetTypeAction(workflows.Action):
                                      }),
                                      initial=True,
                                      required=False)
-    subnet_type = forms.ChoiceField(label=_("Subnet choice"),
+    subnet_type = forms.ChoiceField(label=_("Subnet type choice"),
                                     widget=forms.Select(attrs={
                                         'class': 'switched',
                                         'data-slug': 'nuage_id',
@@ -43,6 +53,14 @@ class CreateSubnetTypeAction(workflows.Action):
                                         "existing Nuage one, making it "
                                         "VSD managed"),
                                     required=False)
+    org_id = UnsafeChoiceField(label=_("Organisation choice"),
+                               required=False)
+    dom_id = UnsafeChoiceField(label=_("Domain choice"),
+                               required=False)
+    zone_id = UnsafeChoiceField(label=_("Zone choice"),
+                                required=False)
+    sub_id = UnsafeChoiceField(label=_("Subnet choice"),
+                               required=False)
 
     class Meta:
         name = _("Subnet Type")
@@ -52,15 +70,49 @@ class CreateSubnetTypeAction(workflows.Action):
         super(CreateSubnetTypeAction, self).__init__(request, context, *args,
                                                      **kwargs)
         if request.user.is_superuser:
-            choices = [('os', _("OpenStack Managed Subnet")),
-                       ('vsd_manual', _("VSD Managed Subnet (Manual)"))]
-            subnet_choices = choices
-            self.fields['subnet_type'].choices = subnet_choices
+            self.fields['org_id'].choices = [('', _("Chose an Organization"))]
+            self.fields['dom_id'].choices = [('', _("Chose a Domain"))]
+            self.fields['zone_id'].choices = [('', _("Chose a Zone"))]
+            self.fields['sub_id'].choices = [('', _("Chose a Subnet"))]
+
+            type_choices = [('', _("Chose a subnet type")),
+                            ('os', _("OpenStack Managed Subnet")),
+                            ('vsd_manual', _("VSD Managed Subnet (Manual)")),
+                            ('vsd_auto', _("VSD Managed Subnet (Auto)"))]
+            self.fields['subnet_type'].choices = type_choices
+
+    def _org_to_choices(self, organisations):
+        choices = []
+        for org in organisations:
+            display_name = '(' + org['id'][:6] + ') ' + org['name']
+            choices.append((org['id'], display_name))
+        return choices
+
+    def get_hidden_fields(self, context):
+        hidden = True
+        return {}
+
+    def is_valid(self):
+        valid = super(CreateSubnetTypeAction, self).is_valid()
+        if not self.request.user.is_superuser:
+            return valid
+        if self.data['subnet_type'] == 'vsd_auto':
+            if not self.data['sub_id']:
+                self._errors['__all__'] = self.error_class(
+                    ['A subnet must be selected below.'])
+                valid = False
+        if ((self.data.get('with_subnet') or self.initial.get('network_id'))
+                and not self.data['subnet_type']):
+            self._errors['subnet_type'] = self.error_class(
+                ['This is a required field.'])
+            valid = False
+
+        return valid
 
 
 class CreateSubnetType(workflows.Step):
     action_class = CreateSubnetTypeAction
-    contributes = ("with_subnet", "subnet_type")
+    contributes = ("with_subnet", "subnet_type", "sub_id", "org_id")
 
 
 class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
@@ -97,7 +149,7 @@ class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
                     'id_ip_version': shown,
                     'id_gateway_ip': shown,
                     'id_no_gateway': shown}
-        else:
+        elif context['subnet_type'] == 'vsd_manual':
             return {'id_nuage_id': shown,
                     'id_net_partition': shown,
                     'subnet_name': shown,
@@ -105,9 +157,21 @@ class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
                     'id_ip_version': hidden,
                     'id_gateway_ip': hidden,
                     'id_no_gateway': hidden}
+        else:
+            return {'id_nuage_id': shown,
+                    'id_net_partition': shown,
+                    'subnet_name': shown,
+                    'id_cidr': shown,
+                    'id_ip_version': shown,
+                    'id_gateway_ip': hidden,
+                    'id_no_gateway': hidden}
 
     def get_locked_fields(self, context, form_data):
-        return self._get_locked_fields(False, form_data)
+        if context['subnet_type'] != 'vsd_manual' \
+                and context['subnet_type'] != 'os':
+            return self._get_locked_fields(True, form_data)
+        else:
+            return self._get_locked_fields(False, form_data)
 
     def _get_locked_fields(self, locked, form_data):
         locked_fields = {'id_gateway_ip': locked,
@@ -125,12 +189,26 @@ class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
                     'id_subnet_name': '',
                     'id_nuage_id': '',
                     'id_net_partition': ''}
-        else:
+        elif context['subnet_type'] == 'os':
             return {'id_cidr': '',
                     'id_gateway_ip': '',
                     'id_subnet_name': '',
                     'id_nuage_id': '.',
                     'id_net_partition': '.'}
+        else:
+            if not context['sub_id']:
+                return {}
+            vsd_subnet = neutron.vsd_subnet_get(request, context['sub_id'])
+            vsd_organisation = neutron.vsd_organisation_list(
+                request, id=context['org_id'])[0]
+            request.session['vsd_subnet'] = vsd_subnet
+            request.session['vsd_organisation'] = vsd_organisation
+            return {'id_nuage_id': vsd_subnet['id'],
+                    'id_net_partition': vsd_organisation['name'],
+                    'id_cidr': vsd_subnet['cidr'],
+                    'id_gateway_ip': vsd_subnet['gateway'],
+                    'id_ip_version': vsd_subnet['ip_version'][-1],
+                    'id_subnet_name': vsd_subnet['name']}
 
     class Meta:
         name = _("Subnet")
@@ -147,6 +225,20 @@ class CreateSubnetInfo(workflows.Step):
 
 
 class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
+    underlay = forms.ChoiceField(label=_("Underlay"),
+                                 choices=[('default', _('Default')),
+                                          ('true', _('True')),
+                                          ('false', _('False'))])
+
+    def __init__(self, request, context, *args, **kwargs):
+        super(CreateSubnetDetailAction, self).__init__(request, context, *args,
+                                                       **kwargs)
+        if not request.user.is_superuser or not context.get('network_id'):
+            del self.fields['underlay']
+        else:
+            network = neutron.network_get(request, context['network_id'])
+            if not network or not network.get('router:external', False):
+                del self.fields['underlay']
 
     def get_hidden_fields(self, context):
         if context['subnet_type'] != 'os':
@@ -161,6 +253,8 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
 
 class CreateSubnetDetail(net_workflows.CreateSubnetDetail):
     action_class = CreateSubnetDetailAction
+    contributes = ("enable_dhcp", "ipv6_modes", "allocation_pools",
+                   "dns_nameservers", "host_routes", "underlay")
 
 
 class CreateNetwork(net_workflows.CreateNetwork):
@@ -226,6 +320,9 @@ class CreateNetwork(net_workflows.CreateNetwork):
             if request.user.is_superuser and data.get('subnet_type') != 'os':
                 params['nuagenet'] = data['nuage_id']
                 params['net_partition'] = data['net_partition']
+            if (request.user.is_superuser
+                    and data.get('underlay', 'default') != 'default'):
+                params['underlay'] = data['underlay']
 
             if tenant_id:
                 params['tenant_id'] = tenant_id

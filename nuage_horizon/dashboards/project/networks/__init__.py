@@ -24,5 +24,14 @@ urls.urlpatterns = [pat for pat in urls.urlpatterns if
 urls.urlpatterns.append(
     url(r'^create$', views.NuageCreateView.as_view(), name='create'))
 urls.urlpatterns.append(
+    url(r'^listOrganizations', views.organizationData,
+        name='listOrganizations'))
+urls.urlpatterns.append(
+    url(r'^listDomains$', views.domainData, name='listDomains'))
+urls.urlpatterns.append(
+    url(r'^listZones', views.zoneData, name='listZones'))
+urls.urlpatterns.append(
+    url(r'^listSubnets', views.subnetData, name='listSubnets'))
+urls.urlpatterns.append(
     url(NETWORKS % 'detail', views.NuageDetailView.as_view(), name='detail'))
 
