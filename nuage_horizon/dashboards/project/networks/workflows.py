@@ -213,7 +213,7 @@ class CreateNetwork(net_workflows.CreateNetwork):
             network_id = self.context.get('network_id')
             network_name = self.context.get('network_name')
         try:
-            if data['subnet_type'] == 'vsd_manual':
+            if data.get('subnet_type') == 'vsd_manual':
                 vsd_subnet = neutron.vsd_subnet_get(request,
                                                     data['nuage_id'])
                 data['cidr'] = vsd_subnet['cidr']
