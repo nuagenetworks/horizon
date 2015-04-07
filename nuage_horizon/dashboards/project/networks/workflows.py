@@ -223,7 +223,7 @@ class CreateNetwork(net_workflows.CreateNetwork):
                       'name': data['subnet_name'],
                       'cidr': data['cidr'],
                       'ip_version': int(data['ip_version'])}
-            if request.user.is_superuser and data['subnet_type'] != 'os':
+            if request.user.is_superuser and data.get('subnet_type') != 'os':
                 params['nuagenet'] = data['nuage_id']
                 params['net_partition'] = data['net_partition']
 
@@ -231,7 +231,7 @@ class CreateNetwork(net_workflows.CreateNetwork):
                 params['tenant_id'] = tenant_id
             if data['no_gateway']:
                 params['gateway_ip'] = None
-            elif data['gateway_ip'] and data['subnet_type'] == 'os':
+            elif data['gateway_ip'] and data.get('subnet_type') == 'os':
                 params['gateway_ip'] = data['gateway_ip']
 
             self._setup_subnet_parameters(params, data)
