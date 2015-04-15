@@ -1,0 +1,24 @@
+{% load i18n sizeformat %}
+
+<h3>{% trans "Gateway Overview" %}</h3>
+
+<div class="info detail">
+  <dl class="dl-horizontal">
+    <dt>{% trans "Name" %}</dt>
+    <dd>{{ gateway.name|default:_("None") }}</dd>
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ gateway.id|default:_("None") }}</dd>
+    <dt>{% trans "Description" %}</dt>
+    <dd>{{ gateway.description|default:_("None") }}</dd>
+    <dt>{% trans "Tenant Id" %}</dt>
+    <dd>{{ gateway.tenant_id|default:_("None") }}</dd>
+    <dt>{% trans "Type" %}</dt>
+    <dd>{{ gateway.type|default:_("None") }}</dd>
+    <dt>{% trans "Status" %}</dt>
+    <dd>{{ gateway.status|default:_("None") }}</dd>
+    <dt>{% trans "Template" %}</dt>
+    <dd>{{ gateway.template|default:_("None") }}</dd>
+    <dt>{% trans "System Id" %}</dt>
+    <dd>{{ gateway.systemid|default:_("None") }}</dd>
+  </dl>
+</div>

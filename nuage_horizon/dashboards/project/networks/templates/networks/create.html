@@ -2,11 +2,6 @@
 {% load i18n %}
 
 {% block modal-footer %}
-  {% if request.user.is_superuser %}
-    <script type="text/javascript">
-      {% include "nuage/networks/_scripts.html" %}
-    </script>
-  {% endif %}
   {% if workflow.wizard %}
   <div class="row">
 
@@ -29,3 +24,14 @@
     {% if modal %}<a class="btn btn-default secondary cancel close">{% trans "Cancel" %}</a>{% endif %}
   {% endif %}
 {% endblock %}
+
+
+{% block modal-js %}
+  {% if request.user.is_superuser %}
+  <script type="text/javascript">
+    {% include 'nuage/js/NuageLinkedSelect.js' %}
+    {% include 'nuage/networks/script.js' %}
+  </script>
+  {% endif %}
+  {{ block.super }}
+{%  endblock %}

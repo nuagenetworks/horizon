@@ -1,0 +1,24 @@
+{% load i18n sizeformat %}
+
+<h3>{% trans "Gateway Port Overview" %}</h3>
+
+<div class="info detail">
+  <dl class="dl-horizontal">
+    <dt>{% trans "Name" %}</dt>
+    <dd>{{ gw_port.name|default:_("None") }}</dd>
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ gw_port.id|default:_("None") }}</dd>
+    <dt>{% trans "Description" %}</dt>
+    <dd>{{ gw_port.description|default:_("None") }}</dd>
+    <dt>{% trans "Tenant Id" %}</dt>
+    <dd>{{ gw_port.tenant_id|default:_("None") }}</dd>
+    <dt>{% trans "VLAN" %}</dt>
+    <dd>{{ gw_port.vlan|default:_("None") }}</dd>
+    <dt>{% trans "Status" %}</dt>
+    <dd>{{ gw_port.status|default:_("None") }}</dd>
+    <dt>{% trans "Usermnemonic" %}</dt>
+    <dd>{{ gw_port.usermnemonic|default:_("None") }}</dd>
+    <dt>{% trans "Physical Name" %}</dt>
+    <dd>{{ gw_port.physicalname|default:_("None") }}</dd>
+  </dl>
+</div>

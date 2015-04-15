@@ -1,0 +1,14 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body-right %}
+  <h3>{% trans "Description:" %}</h3>
+  <p>{% trans "Update the Gateway Port Vlan with specified parameters." %}</p>
+{% endblock %}
+
+{% block modal-js %}
+  <script type="text/javascript">
+    {% include 'nuage/js/NuageLinkedSelect.js' %}
+    {% include 'nuage/gateway_port_vlans/script.js' %}
+  </script>
+{%  endblock %}
