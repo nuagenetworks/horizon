@@ -320,8 +320,7 @@ class CreateNetwork(net_workflows.CreateNetwork):
             if request.user.is_superuser and data.get('subnet_type') != 'os':
                 params['nuagenet'] = data['nuage_id']
                 params['net_partition'] = data['net_partition']
-            if (request.user.is_superuser
-                    and data.get('underlay', 'default') != 'default'):
+            if request.user.is_superuser and data.get('underlay'):
                 params['underlay'] = data['underlay']
 
             if tenant_id:
