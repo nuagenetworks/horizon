@@ -100,8 +100,8 @@ class CreateSubnet(subnet_workflows.CreateSubnet):
             if request.user.is_superuser and data.get('subnet_type') != 'os':
                 params['nuagenet'] = data['nuage_id']
                 params['net_partition'] = data['net_partition']
-            if (request.user.is_superuser
-                    and data.get('underlay', 'default') != 'default'):
+            if (request.user.is_superuser and data.get('underlay')
+                    and data.get('underlay') != 'default'):
                 params['underlay'] = data['underlay']
 
             if data['no_gateway']:
@@ -109,6 +109,8 @@ class CreateSubnet(subnet_workflows.CreateSubnet):
             elif data['gateway_ip'] and data.get('subnet_type') == 'os':
                 params['gateway_ip'] = data['gateway_ip']
 
+            if data.get('subnet_type') != 'os' and vsd_subnet:
+                data['enable_dhcp'] = vsd_subnet.get('cidr') is not None
             self._setup_subnet_parameters(params, data)
 
             subnet = neutron.subnet_create(request, **params)
