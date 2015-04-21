@@ -130,18 +130,24 @@ class UpdateView(forms.ModalFormView):
                 "gw_port": gw_port,
                 "vlan_range": gw_port['vlan'],
                 "vlan": gw_port_vlan.get('value'),
-                # "tenant_id": '9bb044935cd74fe4beefaf2314471f05',
                 "tenant_id": gw_port_vlan.get('tenant'),
                 "type": gw_vport.get('type').lower() if gw_vport else None,
                 "subnet_id": gw_vport.get('subnet') if gw_vport else None,
                 "port_id": gw_vport.get('port') if gw_vport else None}
 
 
+def valid_gw_subnet(subnet, id_net):
+    return (not subnet['vsd_managed']
+            and not id_net[subnet['network_id']]['router:external'])
+
+
 def subnetData(request):
     tenant_id = request.GET.get('tenant_id', request.user.tenant_id)
     subnet_list = neutron.subnet_list(request, tenant_id=tenant_id)
+    net_list = neutron.network_list(request, tenant_id=tenant_id)
+    id_net = dict([(net.id, net) for net in net_list])
     subnet_list = [subnet.to_dict() for subnet in subnet_list
-                   if not subnet['vsd_managed']]
+                   if valid_gw_subnet(subnet, id_net)]
     response = http.HttpResponse(json.dumps(subnet_list, ensure_ascii=False))
     return response
 

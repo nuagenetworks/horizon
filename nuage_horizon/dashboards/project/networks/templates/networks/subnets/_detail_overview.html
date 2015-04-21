@@ -56,5 +56,11 @@
     </dd>
     <dt>{% trans "VSD Managed" %}</dt>
     <dd>{{ subnet.vsd_managed|yesno|capfirst }}</dd>
+    <dt>{% trans "Underlay" %}</dt>
+    {% if subnet.underlay %}
+      <dd>{% trans "Enabled" %}</dd>
+    {% else %}
+      <dd>{% trans "Disabled" %}</dd>
+    {% endif %}
   </dl>
 </div>
