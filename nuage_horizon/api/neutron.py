@@ -70,61 +70,61 @@ def nuage_gateway_port_get(request, gw_port_id, **params):
     return NuageGatewayPort(gw_port)
 
 
-def nuage_gateway_port_vlan_create(request, **kwargs):
-    LOG.debug("nuage_gateway_port_vlan_create(): kwargs=%s", kwargs)
-    vlan_body = {'nuage_gateway_port_vlan': {
+def nuage_gateway_vlan_create(request, **kwargs):
+    LOG.debug("nuage_gateway_vlan_create(): kwargs=%s", kwargs)
+    vlan_body = {'nuage_gateway_vlan': {
         'gatewayport': kwargs['gw_port_id'],
         'value': kwargs['vlan']
     }}
-    gw_vlan = neutronclient(request).create_nuage_gateway_port_vlan(vlan_body)\
-        .get('nuage_gateway_port_vlan')
-    return NuageGatewayPortVlan(gw_vlan)
+    gw_vlan = neutronclient(request).create_nuage_gateway_vlan(vlan_body) \
+        .get('nuage_gateway_vlan')
+    return NuageGatewayVlan(gw_vlan)
 
 
-def nuage_gateway_port_vlan_assign(request, gw_port_vlan_id, **kwargs):
-    LOG.debug("nuage_gateway_port_vlan_assign(): id=%s kwargs=%s",
-              gw_port_vlan_id, kwargs)
-    vlan_body = {'nuage_gateway_port_vlan': {
+def nuage_gateway_vlan_assign(request, gw_vlan_id, **kwargs):
+    LOG.debug("nuage_gateway_vlan_assign(): id=%s kwargs=%s",
+              gw_vlan_id, kwargs)
+    vlan_body = {'nuage_gateway_vlan': {
         'action': 'assign',
         'tenant': kwargs['tenant_id']
     }}
-    gw_vlan = neutronclient(request).assign_nuage_gateway_port_vlan(
-        gw_port_vlan_id, body=vlan_body)
-    return NuageGatewayPortVlan(gw_vlan)
+    gw_vlan = neutronclient(request).assign_nuage_gateway_vlan(
+        gw_vlan_id, body=vlan_body)
+    return NuageGatewayVlan(gw_vlan)
 
 
-def nuage_gateway_port_vlan_unassign(request, gw_port_vlan_id, **kwargs):
-    LOG.debug("nuage_gateway_port_vlan_unassign(): id=%s kwargs=%s",
-              gw_port_vlan_id, kwargs)
-    vlan_body = {'nuage_gateway_port_vlan': {
+def nuage_gateway_vlan_unassign(request, gw_vlan_id, **kwargs):
+    LOG.debug("nuage_gateway_vlan_unassign(): id=%s kwargs=%s",
+              gw_vlan_id, kwargs)
+    vlan_body = {'nuage_gateway_vlan': {
         'action': 'unassign',
         'tenant': kwargs['tenant_id']
     }}
-    gw_vlan = neutronclient(request).unassign_nuage_gateway_port_vlan(
-        gw_port_vlan_id, body=vlan_body)
-    return NuageGatewayPortVlan(gw_vlan)
+    gw_vlan = neutronclient(request).unassign_nuage_gateway_vlan(
+        gw_vlan_id, body=vlan_body)
+    return NuageGatewayVlan(gw_vlan)
 
 
-def nuage_gateway_port_vlan_list(request, gw_port_id=None, **params):
-    LOG.debug("nuage_gateway_port_vlan_list(): gw_port_id=%s params=%s",
+def nuage_gateway_vlan_list(request, gw_port_id=None, **params):
+    LOG.debug("nuage_gateway_vlan_list(): gw_port_id=%s params=%s",
               gw_port_id, params)
-    gw_port_vlans = neutronclient(request).list_nuage_gateway_port_vlans(
-        gw_port_id, **params).get('nuage_gateway_port_vlans')
-    return [NuageGatewayPortVlan(gw_port_vlan) for gw_port_vlan in gw_port_vlans]
+    gw_vlans = neutronclient(request).list_nuage_gateway_vlans(
+        gw_port_id, **params).get('nuage_gateway_vlans')
+    return [NuageGatewayVlan(gw_vlan) for gw_vlan in gw_vlans]
 
 
-def nuage_gateway_port_vlan_get(request, gw_port_vlan_id, **params):
-    LOG.debug("nuage_gateway_port_vlan_get(): id=%s params=%s",
-              gw_port_vlan_id, params)
-    gw_port_vlan = neutronclient(request).show_nuage_gateway_port_vlan(
-        gw_port_vlan_id, **params).get('nuage_gateway_port_vlan')
-    return NuageGatewayPortVlan(gw_port_vlan)
+def nuage_gateway_vlan_get(request, gw_vlan_id, **params):
+    LOG.debug("nuage_gateway_vlan_get(): id=%s params=%s",
+              gw_vlan_id, params)
+    gw_vlan = neutronclient(request).show_nuage_gateway_vlan(
+        gw_vlan_id, **params).get('nuage_gateway_vlan')
+    return NuageGatewayVlan(gw_vlan)
 
 
-def nuage_gateway_port_vlan_delete(request, gw_port_vlan_id):
-    LOG.debug("nuage_gateway_port_vlan_delete(): gw_port_vlan_id=%s",
-              gw_port_vlan_id)
-    neutronclient(request).delete_nuage_gateway_port_vlan(gw_port_vlan_id)
+def nuage_gateway_vlan_delete(request, gw_vlan_id):
+    LOG.debug("nuage_gateway_vlan_delete(): gw_vlan_id=%s",
+              gw_vlan_id)
+    neutronclient(request).delete_nuage_gateway_vlan(gw_vlan_id)
 
 
 def nuage_gateway_vport_get(request, gw_vport_id, **params):
@@ -138,7 +138,7 @@ def nuage_gateway_vport_get(request, gw_vport_id, **params):
 def nuage_gateway_vport_create(request, **kwargs):
     LOG.debug("nuage_gateway_vport_create(): kwargs=%s", kwargs)
     vport_body = {'nuage_gateway_vport': {
-        'gatewayvlan': kwargs['gw_port_vlan_id'],
+        'gatewayvlan': kwargs['gw_vlan_id'],
         'tenant': kwargs['tenant_id']
     }}
     if kwargs.get('subnet_id'):
@@ -185,9 +185,9 @@ class NuageGatewayPort(NeutronAPIDictWrapper):
         super(NuageGatewayPort, self).__init__(apiresource)
 
 
-class NuageGatewayPortVlan(NeutronAPIDictWrapper):
+class NuageGatewayVlan(NeutronAPIDictWrapper):
     def __init__(self, apiresource):
-        super(NuageGatewayPortVlan, self).__init__(apiresource)
+        super(NuageGatewayVlan, self).__init__(apiresource)
 
 
 class NuageGatewayVport(NeutronAPIDictWrapper):

@@ -19,4 +19,4 @@ from horizon import loaders
 
 app_dir = os.path.dirname(__file__)
 template_dir = os.path.join(app_dir, "templates")
-loaders.panel_template_dirs['nuage/gateway_port_vlans'] = template_dir
+loaders.panel_template_dirs['nuage/gateway_vlans'] = template_dir

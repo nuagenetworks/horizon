@@ -13,10 +13,11 @@
  * #    License for the specific language governing permissions and limitations
  * #    under the License.
  */
+debugger;
 var port_select, subnet_select, type_select, tenant_select;
 port_select = new NuageLinkedSelect({
   $source: $('#id_port_id'),
-  url: '/project/gateway_port_vlans/listPorts',
+  url: '/project/gateway_vlans/listPorts',
   qparams: function(param){
     return {'network_id': subnet_select.get_opt().obj.network_id};
   },
@@ -26,10 +27,12 @@ port_select = new NuageLinkedSelect({
 });
 subnet_select = new NuageLinkedSelect({
   $source: $('#id_subnet_id'),
-  url: '/project/gateway_port_vlans/listSubnets',
+  url: '/project/gateway_vlans/listSubnets',
   qparams: function(ignored){
     if (tenant_select)
       return {'tenant_id': tenant_select.get_opt().value};
+    else if ($('#id_assigned').length)
+      return {'tenant_id': $('#id_assigned').val()};
     else
       return {};
   },
@@ -45,20 +48,19 @@ type_select = new NuageLinkedSelect({
   $source: $('#id_type'),
   next: subnet_select
 });
-var $tenant_box = $('#id_tenant_id')
-if ( $tenant_box.length ) {
+var $tenant_box = $('#id_assigned');
+if ( $tenant_box.length && $tenant_box.is('select') ) {
   tenant_select = new NuageLinkedSelect({
     $source: $tenant_box,
     next: type_select
   });
 }
 
-if ($tenant_box.length && tenant_select.$source.prop("selectedIndex") == 0) {
-  tenant_select.hide_next();
-} else if (type_select.$source.prop("selectedIndex") == 0) {
+if ((!tenant_select && type_select.$source.prop("selectedIndex") == 0)
+    || (tenant_select && tenant_select.$source.prop("selectedIndex") == 0)) {
   type_select.hide_next();
-} else if (subnet_select.$source.prop("selectedIndex") == 0) {
-  subnet_select.hide_next();
-} else if (type_select.get_opt().value == 'bridge') {
-  port_select.hide();
+}
+
+if (type_select.$source.prop("selectedIndex") != 0) {
+  type_select.$source.trigger("change");
 }

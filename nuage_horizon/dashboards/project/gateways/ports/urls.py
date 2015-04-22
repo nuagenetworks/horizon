@@ -3,7 +3,7 @@ from django.conf.urls import url
 
 from nuage_horizon.dashboards.project.gateways.ports \
     import views as gw_port_views
-from nuage_horizon.dashboards.project.gateway_port_vlans \
+from nuage_horizon.dashboards.project.gateway_vlans \
     import views as vlan_views
 
 GW_PORT = r'^(?P<gw_port_id>[^/]+)/%s'

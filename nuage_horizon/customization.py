@@ -1,7 +1,7 @@
 from dashboards.project import routers
 from dashboards.project import networks
 from dashboards.project import gateways # noqa
-from dashboards.project import gateway_port_vlans # noqa
+from dashboards.project import gateway_vlans # noqa
 from dashboards.project.networks import subnets
 from dashboards.admin.networks import subnets
 from dashboards.project import dashboard # noqa

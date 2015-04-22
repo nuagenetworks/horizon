@@ -18,12 +18,12 @@ import horizon
 from openstack_dashboard.dashboards.project import dashboard
 
 
-class GatewayPortVlans(horizon.Panel):
-    name = _("Gateway Port Vlans")
-    slug = 'gateway_port_vlans'
+class GatewayVlans(horizon.Panel):
+    name = _("Gateway Vlans")
+    slug = 'gateway_vlans'
 
     def allowed(self, context):
         return not context['request'].user.is_superuser
 
 
-dashboard.Project.register(GatewayPortVlans)
+dashboard.Project.register(GatewayVlans)

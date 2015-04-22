@@ -11,19 +11,19 @@ from horizon.utils import memoized
 
 from nuage_horizon.api import neutron
 from . import forms as vlan_forms
-from . import tables as gw_port_vlan_tables
+from . import tables as gw_vlan_tables
 
 
 class IndexView(tables.DataTableView):
-    table_class = gw_port_vlan_tables.VlansTable
-    template_name = 'nuage/gateway_port_vlans/index.html'
+    table_class = gw_vlan_tables.VlansTable
+    template_name = 'nuage/gateway_vlans/index.html'
 
     def get_data(self):
         request = self.request
         try:
-            gw_port_vlans = neutron.nuage_gateway_port_vlan_list(request)
+            gw_vlans = neutron.nuage_gateway_vlan_list(request)
             vlans = []
-            for vlan in gw_port_vlans:
+            for vlan in gw_vlans:
                 if vlan.get('vport'):
                     dict = vlan.to_dict()
                     vport = neutron.nuage_gateway_vport_get(request,
@@ -37,24 +37,24 @@ class IndexView(tables.DataTableView):
                             port = neutron.port_get(request,
                                                     vport['port'])
                             dict['port'] = port
-                    vlan = neutron.NuageGatewayPortVlan(dict)
+                    vlan = neutron.NuageGatewayVlan(dict)
                 vlans.append(vlan)
         except Exception:
             vlans = []
-            msg = _('Nuage Gateway Port Vlanlist can not be retrieved.')
+            msg = _('Nuage Gateway Vlanlist can not be retrieved.')
             exceptions.handle(self.request, msg)
         return vlans
 
 
 class CreateView(forms.ModalFormView):
     form_class = vlan_forms.CreateForm
-    form_id = "create_gw_port_vlan_form"
-    modal_header = _("Create Gateway Port Vlan")
-    template_name = 'nuage/gateway_port_vlans/create.html'
+    form_id = "create_gw_vlan_form"
+    modal_header = _("Create Gateway Vlan")
+    template_name = 'nuage/gateway_vlans/create.html'
     success_url = 'horizon:project:gateways:ports:detail'
     failure_url = 'horizon:project:gateways:ports:detail'
     submit_url = 'horizon:project:gateways:ports:createvlan'
-    page_title = _("Create Gateway Port Vlan")
+    page_title = _("Create Gateway Vlan")
     submit_label = _("Create Port Vlan")
 
     def get_success_url(self):
@@ -85,13 +85,13 @@ class CreateView(forms.ModalFormView):
 
 class UpdateView(forms.ModalFormView):
     form_class = vlan_forms.UpdateForm
-    form_id = "update_gw_port_vlan_form"
-    modal_header = _("Update Gateway Port Vlan")
-    template_name = 'nuage/gateway_port_vlans/update.html'
+    form_id = "update_gw_vlan_form"
+    modal_header = _("Update Gateway Vlan")
+    template_name = 'nuage/gateway_vlans/update.html'
     admin_success_url = 'horizon:project:gateways:ports:detail'
-    user_success_url = 'horizon:project:gateway_port_vlans:index'
-    submit_url = 'horizon:project:gateway_port_vlans:edit'
-    page_title = _("Update Gateway Port Vlan")
+    user_success_url = 'horizon:project:gateway_vlans:index'
+    submit_url = 'horizon:project:gateway_vlans:edit'
+    page_title = _("Update Gateway Vlan")
     submit_label = _("Update")
 
     def get_success_url(self):
@@ -103,34 +103,34 @@ class UpdateView(forms.ModalFormView):
 
     @memoized.memoized_method
     def _get_object(self):
-        vlan_id = self.kwargs["gw_port_vlan_id"]
+        vlan_id = self.kwargs["gw_vlan_id"]
         try:
-            return neutron.nuage_gateway_port_vlan_get(
+            return neutron.nuage_gateway_vlan_get(
                 self.request, vlan_id)
         except Exception:
-            msg = _("Unable to retrieve Gateway Port Vlan.")
+            msg = _("Unable to retrieve Gateway Vlan.")
             exceptions.handle(self.request, msg)
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context['gw_port_vlan'] = self._get_object()
+        context['gw_vlan'] = self._get_object()
         context['submit_url'] = reverse(self.submit_url,
                                         args=(self._get_object().id,))
         return context
 
     def get_initial(self):
-        gw_port_vlan = self._get_object()
+        gw_vlan = self._get_object()
         gw_port = neutron.nuage_gateway_port_get(
-            self.request, gw_port_vlan.get('gatewayport'))
+            self.request, gw_vlan.get('gatewayport'))
         gw_vport = None
-        if gw_port_vlan.get('vport'):
+        if gw_vlan.get('vport'):
             gw_vport = neutron.nuage_gateway_vport_get(
-                self.request, gw_port_vlan['vport'])
-        return {"gw_port_vlan_id": self.kwargs['gw_port_vlan_id'],
+                self.request, gw_vlan['vport'])
+        return {"gw_vlan_id": self.kwargs['gw_vlan_id'],
                 "gw_port": gw_port,
                 "vlan_range": gw_port['vlan'],
-                "vlan": gw_port_vlan.get('value'),
-                "tenant_id": gw_port_vlan.get('tenant'),
+                "vlan": gw_vlan.get('value'),
+                "assigned": gw_vlan.get('assigned'),
                 "type": gw_vport.get('type').lower() if gw_vport else None,
                 "subnet_id": gw_vport.get('subnet') if gw_vport else None,
                 "port_id": gw_vport.get('port') if gw_vport else None}

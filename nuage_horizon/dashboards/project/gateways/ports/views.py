@@ -6,7 +6,7 @@ from horizon import tables
 from horizon.utils import memoized
 
 from nuage_horizon.api import neutron
-from nuage_horizon.dashboards.project.gateway_port_vlans \
+from nuage_horizon.dashboards.project.gateway_vlans \
     import tables as vlan_tables
 
 
@@ -19,10 +19,10 @@ class DetailView(tables.DataTableView):
         request = self.request
         try:
             gw_port = self._get_gateway_port_data()
-            gw_port_vlans = neutron.nuage_gateway_port_vlan_list(
+            gw_vlans = neutron.nuage_gateway_vlan_list(
                 self.request, gw_port.id)
             vlans = []
-            for vlan in gw_port_vlans:
+            for vlan in gw_vlans:
                 if vlan.get('vport'):
                     dict = vlan.to_dict()
                     vport = neutron.nuage_gateway_vport_get(request,
@@ -36,11 +36,11 @@ class DetailView(tables.DataTableView):
                             port = neutron.port_get(request,
                                                     vport['port'])
                             dict['port'] = port
-                    vlan = neutron.NuageGatewayPortVlan(dict)
+                    vlan = neutron.NuageGatewayVlan(dict)
                 vlans.append(vlan)
         except Exception:
             vlans = []
-            msg = _('Nuage Gateway Port Vlan list can not be retrieved.')
+            msg = _('Nuage Gateway Vlan list can not be retrieved.')
             exceptions.handle(request, msg)
         return vlans
 

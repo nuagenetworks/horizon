@@ -19,7 +19,7 @@ import horizon
 class GatewayPanels(horizon.PanelGroup):
     slug = "gateway"
     name = _("Gateway")
-    panels = ('gateways', "gateway_port_vlans")
+    panels = ('gateways', "gateway_vlans")
 
 
 project = horizon.get_dashboard('project')
