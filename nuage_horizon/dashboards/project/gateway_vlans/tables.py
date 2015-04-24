@@ -177,9 +177,16 @@ def get_port_link(gw_vlan):
         return reverse('horizon:project:networks:ports:detail', args=args)
 
 
+def get_project_link(gw_vlan):
+    if gw_vlan.get('assigned'):
+        args = [gw_vlan['assigned']]
+        return reverse('horizon:identity:projects:detail', args=args)
+
+
 class VlansTable(tables.DataTable):
     vlan = tables.Column("value", verbose_name=_("VLAN"))
-    assigned = tables.Column("assigned", verbose_name=_("Assigned to"))
+    assigned = tables.Column("assigned", verbose_name=_("Assigned to"),
+                             link=get_project_link)
     status = tables.Column("status", verbose_name=_("Status"))
 
     subnet = tables.Column(get_subnet, verbose_name=_("Subnet"),

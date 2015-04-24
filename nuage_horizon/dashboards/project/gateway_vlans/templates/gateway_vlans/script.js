@@ -13,7 +13,6 @@
  * #    License for the specific language governing permissions and limitations
  * #    under the License.
  */
-debugger;
 var port_select, subnet_select, type_select, tenant_select;
 port_select = new NuageLinkedSelect({
   $source: $('#id_port_id'),
@@ -56,9 +55,10 @@ if ( $tenant_box.length && $tenant_box.is('select') ) {
   });
 }
 
-if ((!tenant_select && type_select.$source.prop("selectedIndex") == 0)
-    || (tenant_select && tenant_select.$source.prop("selectedIndex") == 0)) {
+if ((!tenant_select && type_select.$source.prop("selectedIndex") == 0)) {
   type_select.hide_next();
+} else if (tenant_select) {
+  tenant_select.hide_next();
 }
 
 if (type_select.$source.prop("selectedIndex") != 0) {

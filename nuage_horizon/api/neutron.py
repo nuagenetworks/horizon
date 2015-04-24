@@ -59,7 +59,7 @@ def nuage_gateway_port_list(request, gateway_id=None, **params):
     LOG.debug("nuage_gateway_port_list(): gateway_id=%s params=%s",
               gateway_id, params)
     gw_ports = neutronclient(request).list_nuage_gateway_ports(
-        gateway_id, **params).get('nuage_gateway_ports')
+        gateway=gateway_id).get('nuage_gateway_ports')
     return [NuageGatewayPort(gw_port) for gw_port in gw_ports]
 
 
@@ -88,7 +88,7 @@ def nuage_gateway_vlan_assign(request, gw_vlan_id, **kwargs):
         'action': 'assign',
         'tenant': kwargs['tenant_id']
     }}
-    gw_vlan = neutronclient(request).assign_nuage_gateway_vlan(
+    gw_vlan = neutronclient(request).update_nuage_gateway_vlan(
         gw_vlan_id, body=vlan_body)
     return NuageGatewayVlan(gw_vlan)
 
@@ -100,7 +100,7 @@ def nuage_gateway_vlan_unassign(request, gw_vlan_id, **kwargs):
         'action': 'unassign',
         'tenant': kwargs['tenant_id']
     }}
-    gw_vlan = neutronclient(request).unassign_nuage_gateway_vlan(
+    gw_vlan = neutronclient(request).update_nuage_gateway_vlan(
         gw_vlan_id, body=vlan_body)
     return NuageGatewayVlan(gw_vlan)
 
@@ -109,7 +109,7 @@ def nuage_gateway_vlan_list(request, gw_port_id=None, **params):
     LOG.debug("nuage_gateway_vlan_list(): gw_port_id=%s params=%s",
               gw_port_id, params)
     gw_vlans = neutronclient(request).list_nuage_gateway_vlans(
-        gw_port_id, **params).get('nuage_gateway_vlans')
+        gatewayport=gw_port_id, **params).get('nuage_gateway_vlans')
     return [NuageGatewayVlan(gw_vlan) for gw_vlan in gw_vlans]
 
 
