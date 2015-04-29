@@ -1,0 +1,52 @@
+{% load i18n %}
+
+<noscript><h3>{{ step }}</h3></noscript>
+<div class="row">
+  <div class="col-sm-6">
+    <fieldset>
+      {% include "horizon/common/_form_fields.html" %}
+      <table class="table-fixed" id="networkListSortContainer">
+        <tbody>
+        <tr>
+          <td>
+            <label id="selected_network_label">{% trans "Selected networks" %}</label>
+            <ul id="selected_network" class="networklist">
+            </ul>
+            <label>{% trans "Available networks" %}</label>
+            <ul id="available_network" class="networklist">
+            </ul>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </fieldset>
+  </div>
+  <div class="col-sm-6">
+    {{ step.get_help_text }}
+    <div>
+      <a class="btn btn-primary" id="tier-button">
+        {% trans "Chose Tiers instead of Networks." %}
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  {% include 'nuage/instances/network_select.js' %}
+  if (typeof $ !== 'undefined') {
+    horizon.instances.workflow_init($(".workflow"));
+  } else {
+    addHorizonLoadEvent(function() {
+      horizon.instances.workflow_init($(".workflow"));
+    });
+  }
+  $('#tier-button').click(function(){
+    $('a[data-target="#launch_instance__settieraction"]').trigger('click');
+    $('#selected_network').find('li > a').each(function(){
+      $(this).trigger('click');
+    })
+  });
+  $("#networkListIdContainer").show();
+  $("#id_network").parent().parent().hide();
+</script>

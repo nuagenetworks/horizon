@@ -1,0 +1,14 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body-right %}
+  <h3>{% trans "Description:" %}</h3>
+  <p>{% trans "Creates a Tier with specified parameters." %}</p>
+{% endblock %}
+
+{% block modal-js %}
+  <script type="text/javascript">
+    {% include 'nuage/applications/tiers/script.js' %}
+  </script>
+  {{ block.super }}
+{%  endblock %}

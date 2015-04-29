@@ -1,0 +1,24 @@
+{% load i18n sizeformat %}
+
+<div class="info detail">
+  <dl class="dl-horizontal">
+    <dt>{% trans "Name" %}</dt>
+    <dd>{{ flow.name|default:_("None") }}</dd>
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ flow.id|default:_("None") }}</dd>
+    <dt>{% trans "Type" %}</dt>
+    <dd>{{ flow.type|default:_("None") }}</dd>
+    <dt>{% trans "Description" %}</dt>
+    <dd>{{ flow.description|default:_("None") }}</dd>
+    {% if flow.cidr %}
+      <dt>{% trans "Cidr" %}</dt>
+      <dd>{{ flow.cidr }}</dd>
+    {% endif %}
+    <dt>{% trans "Application" %}</dt>
+    <dd>
+      <a href="{% url 'horizon:project:applications:detail' flow.associatedappid %}">
+      {{ flow.associatedappid }}
+      </a>
+    </dd>
+  </dl>
+</div>
