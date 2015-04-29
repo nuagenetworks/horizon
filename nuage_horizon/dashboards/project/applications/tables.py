@@ -35,12 +35,13 @@ class DeleteApplication(tables.DeleteAction):
         try:
             neutron.application_delete(request, application_id)
             LOG.debug('Deleted app %s successfully', app.name)
-        except Exception:
-            msg = _('Failed to delete application %s')
-            LOG.info(msg, application_id)
+        except Exception as e:
+            msg = _('Failed to delete application %s. Details: %s')
+            LOG.info(msg, application_id, e.message)
             redirect = reverse("horizon:project:applications:index")
             usrmsg = _('Failed to delete application %s')
-            exceptions.handle(request, usrmsg % app.name, redirect=redirect)
+            exceptions.handle(request, usrmsg % (app.name, e.message),
+                              redirect=redirect)
 
 
 class CreateApplication(tables.LinkAction):

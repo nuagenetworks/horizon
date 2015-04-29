@@ -48,8 +48,9 @@ class DeleteApplicationService(tables.DeleteAction):
         try:
             neutron.application_service_delete(request, app_service_id)
             LOG.debug('Deleted application service %s successfully', name)
-        except Exception:
-            msg = _('Failed to delete application service %s' % app_service_id)
+        except Exception as e:
+            msg = _('Failed to delete application service %s. Details: %s'
+                    % (app_service_id, e.message))
             LOG.info(msg)
             redirect = reverse("horizon:project:application_services:index")
             usrmsg = _('Failed to delete application service %s' % name)

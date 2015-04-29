@@ -184,7 +184,8 @@ def handle(self, request, context):
         tiers = context.get('tier_id')
         base_name = context['name']
         for i in range(instance_count):
-            context['name'] = base_name + '-' + str(i+1)
+            if instance_count > 1:
+                context['name'] = base_name + '-' + str(i+1)
             nics = []
             appdports = []
             try:

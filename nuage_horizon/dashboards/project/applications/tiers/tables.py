@@ -39,12 +39,13 @@ class DeleteTier(policy.PolicyTargetMixin, tables.DeleteAction):
         try:
             neutron.tier_delete(request, tier_id)
             LOG.debug('Deleted tier %s successfully', tier.name)
-        except Exception:
-            msg = _('Failed to delete tier %s')
-            LOG.info(msg, tier_id)
+        except Exception as e:
+            msg = _('Failed to delete tier %s. Details: %s')
+            LOG.info(msg, tier_id, e.message)
             redirect = reverse('horizon:project:applications:detail',
                                args=[tier.associatedappid])
-            exceptions.handle(request, msg % tier_id, redirect=redirect)
+            exceptions.handle(request, msg % (tier_id, e.message),
+                              redirect=redirect)
 
 
 class CreateTier(tables.LinkAction):

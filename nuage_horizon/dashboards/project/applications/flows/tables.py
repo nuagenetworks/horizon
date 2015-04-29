@@ -35,12 +35,13 @@ class DeleteFlow(tables.DeleteAction):
         try:
             neutron.flow_delete(request, flow_id)
             LOG.debug('Deleted flow %s successfully', flow.name)
-        except Exception:
-            msg = _('Failed to delete flow %s')
-            LOG.info(msg, flow_id)
+        except Exception as e:
+            msg = _('Failed to delete flow %s. Details: %s')
+            LOG.info(msg, flow_id, e.message)
             redirect = reverse('horizon:project:applications:detail',
                                args=[flow.associatedappid])
-            exceptions.handle(request, msg % flow_id, redirect=redirect)
+            exceptions.handle(request, msg % (flow_id, e.message),
+                              redirect=redirect)
 
 
 class CreateFlow(tables.LinkAction):

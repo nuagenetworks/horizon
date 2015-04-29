@@ -48,8 +48,9 @@ class DeleteApplicationDomain(tables.DeleteAction):
         try:
             neutron.application_domain_delete(request, application_id)
             LOG.debug('Deleted application domain %s successfully', app.name)
-        except Exception:
-            msg = _('Failed to delete application domain %s' % application_id)
+        except Exception as e:
+            msg = _('Failed to delete application domain %s. Details: %s'
+                    % (application_id, e.message))
             LOG.info(msg)
             redirect = reverse("horizon:project:application_domains:index")
             usrmsg = _('Failed to delete application domain %s' % app.name)

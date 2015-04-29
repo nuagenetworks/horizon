@@ -67,11 +67,11 @@ class CreateForm(forms.SelfHandlingForm):
                     '') % data['name']
             messages.success(request, msg)
             return True
-        except Exception:
+        except Exception as e:
             msg = _('Failed to create Application Service "%s".') % data['name']
-            LOG.info(msg)
-            redirect = reverse(self.failure_url)
-            exceptions.handle(request, msg, redirect=redirect)
+            LOG.info(msg + '. Message: ' + e.message)
+            error = self.error_class([_('Failed to create service.')])
+            self._errors['__all__'] = error
             return False
 
 
