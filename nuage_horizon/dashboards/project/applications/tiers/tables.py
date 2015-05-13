@@ -12,7 +12,12 @@ from openstack_dashboard import policy
 from nuage_horizon.api import neutron
 
 
-LOG = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__) \
+
+TIER_TYPE_DICT = {'STANDARD': 'Application Tier',
+                  'NETWORK_MACRO': 'Network Macro',
+                  'APPLICATION': 'Current Application',
+                  'APPLICATION_EXTENDED_NETWORK': "Application's Domain"}
 
 
 class DeleteTier(policy.PolicyTargetMixin, tables.DeleteAction):
@@ -72,11 +77,15 @@ class EditTier(tables.LinkAction):
         return reverse(self.url, args=(tier.id,))
 
 
+def get_type(tier):
+    return TIER_TYPE_DICT[tier.type]
+
+
 class TiersTable(tables.DataTable):
     name = tables.Column("name",
                          verbose_name=_("Name"),
                          link='horizon:project:applications:tiers:detail')
-    type = tables.Column("type", verbose_name=_("type"))
+    type = tables.Column(get_type, verbose_name=_("type"))
 
     class Meta:
         name = "tiers"

@@ -39,7 +39,7 @@ class DeleteApplication(tables.DeleteAction):
             msg = _('Failed to delete application %s. Details: %s')
             LOG.info(msg, application_id, e.message)
             redirect = reverse("horizon:project:applications:index")
-            usrmsg = _('Failed to delete application %s')
+            usrmsg = _('Failed to delete application %s. Details: %s')
             exceptions.handle(request, usrmsg % (app.name, e.message),
                               redirect=redirect)
 

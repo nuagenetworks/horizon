@@ -1,9 +1,12 @@
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse_lazy
 from django.core.urlresolvers import reverse
+
 from horizon import exceptions
 from horizon import forms
 from horizon import tables
+from horizon.utils import memoized
+from horizon import views
 
 from nuage_horizon.dashboards.project.application_services \
     import tables as app_service_tables
@@ -36,6 +39,31 @@ class CreateView(forms.ModalFormView):
     submit_url = reverse_lazy('horizon:project:application_services:create')
     page_title = _("Create Application Service")
     submit_label = _("Create")
+
+
+class DetailView(views.HorizonTemplateView):
+    template_name = 'project/application_services/detail.html'
+    page_title = _("Service Details")
+
+    @memoized.memoized_method
+    def _get_data(self):
+        try:
+            app_service = neutron.application_service_get(
+                self.request, self.kwargs['application_service_id'])
+        except Exception:
+            redirect = reverse('horizon:project:application_services:index')
+            msg = _('Unable to retrieve details for Aoplication Service '
+                    '"%s".') % (self.kwargs['application_service_id'])
+            exceptions.handle(self.request, msg, redirect=redirect)
+        return app_service
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        app_service = self._get_data()
+        context['app_service'] = app_service
+        table = app_service_tables.ApplicationServicesTable(self.request)
+        context["actions"] = table.render_row_actions(app_service)
+        return context
 
 
 class UpdateView(forms.ModalFormView):

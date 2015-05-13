@@ -33,15 +33,17 @@ class CreateForm(forms.SelfHandlingForm):
                          version=forms.IPv4 | forms.IPv6,
                          mask=True,
                          required=False)
-    fip_pool = forms.CharField(max_length=255,
-                               label=_("Nuage fip pool id"),
-                               required=False)
+    fip_pool = forms.ChoiceField(label=_("Fip pool"), required=False)
     failure_url = 'horizon:project:applications:detail'
 
     def __init__(self, request, *args, **kwargs):
         super(CreateForm, self).__init__(request, *args, **kwargs)
         fip_pools = neutron.network_list(request, **{'router:external': True})
-        fip_choices = [(fip_pool.id, fip_pool.name) for fip_pool in fip_pools]
+        fip_choices = [('', _('Choose a fip subnet'))]
+        for fip_net in fip_pools:
+            fip_choices.extend(
+                [(fip_subnet.id, fip_subnet.name)
+                 for fip_subnet in fip_net.get('subnets')])
         self.fields['fip_pool'].choices = fip_choices
 
     def is_valid(self):

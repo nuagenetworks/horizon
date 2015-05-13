@@ -23,13 +23,16 @@ from openstack_dashboard import api
 def func(neutron_ports, obj_id, request):
     try:
         server = api.nova.server_get(request, obj_id)
-        while server.status != 'DELETED':
+        count = 0
+        while server.status != 'DELETED' and count < 6:
             server = api.nova.server_get(request, obj_id)
             time.sleep(5)
+            count += 1
     except Exception:
         pass
     for port in neutron_ports:
-        neutron.appdport_delete(request, port.id)
+        if port['device_owner'] == 'appd':
+            neutron.appdport_delete(request, port.id)
 
 
 def action(self, request, obj_id):

@@ -52,7 +52,7 @@ class CreateView(forms.ModalFormView):
 
 
 class DetailView(views.HorizonTemplateView):
-    template_name = 'project/applications/flows/detail.html'
+    template_name = 'nuage/applications/flows/detail.html'
     page_title = _("Flow Details")
 
     @memoized.memoized_method

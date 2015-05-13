@@ -80,7 +80,7 @@ class SetTierAction(workflows.Action):
         return validate_net_tier_combo(self, SetTierAction)
 
     class Meta(object):
-        name = _('Tiering')
+        name = _('Application')
         help_text = _('First chose an Application. Then select tiers for your '
                       'instance.')
 

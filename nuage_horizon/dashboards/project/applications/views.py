@@ -52,6 +52,7 @@ class DetailView(tables.MultiTableView):
             exceptions.handle(self.request, msg)
         return tiers
 
+    @memoized.memoized_method
     def get_flows_data(self):
         try:
             app = self._get_application_data()
@@ -60,18 +61,19 @@ class DetailView(tables.MultiTableView):
             key_tiers = dict([(tier['id'], tier) for tier in tiers])
             res = []
             for flow in flows:
-                flow_dict = flow.to_dict()
+                flow_dict = neutron.flow_get(self.request, flow['id']).to_dict()
                 if flow_dict['origin_tier']:
-                    flow_dict['origin_tier'] = key_tiers[flow_dict['origin_tier']]
+                    flow_dict['origin_tier'] = key_tiers[
+                        flow_dict['origin_tier']]
                 if flow_dict['dest_tier']:
                     flow_dict['dest_tier'] = key_tiers[flow_dict['dest_tier']]
                 flow = neutron.NuageFlow(flow_dict)
                 res.append(flow)
         except Exception:
-            flows = []
+            res = []
             msg = _('Flow list can not be retrieved.')
             exceptions.handle(self.request, msg)
-        return flows
+        return res
 
     @memoized.memoized_method
     def _get_application_data(self):

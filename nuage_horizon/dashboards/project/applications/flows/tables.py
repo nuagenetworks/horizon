@@ -4,6 +4,7 @@ from horizon import tables
 from horizon import exceptions
 
 from django.core.urlresolvers import reverse
+from django import template
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext_lazy
 
@@ -93,6 +94,9 @@ class FlowsTable(tables.DataTable):
     dest_tier = tables.Column(get_dest_tier_name,
                               verbose_name=_("To"),
                               link=get_dest_tier_link)
+
+    services = tables.Column('nuage_services',
+                             verbose_name=_("Services"))
 
     class Meta:
         name = "flows"

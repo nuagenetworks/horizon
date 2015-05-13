@@ -53,7 +53,8 @@ class DeleteApplicationDomain(tables.DeleteAction):
                     % (application_id, e.message))
             LOG.info(msg)
             redirect = reverse("horizon:project:application_domains:index")
-            usrmsg = _('Failed to delete application domain %s' % app.name)
+            usrmsg = _('Failed to delete application domain %s. Details: %s'
+                       % (app.name, e.message))
             exceptions.handle(request, usrmsg, redirect=redirect)
 
 

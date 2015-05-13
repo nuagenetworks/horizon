@@ -72,9 +72,6 @@ class DetailView(views.HorizonTemplateView):
         tier = self._get_data()
         context['tier'] = tier
         table = tier_tables.TiersTable(self.request)
-        args = (tier.associatedappid,)
-        context["url"] = reverse('horizon:project:applications:detail',
-                                 args=args)
         context["actions"] = table.render_row_actions(tier)
         return context
 

@@ -53,7 +53,8 @@ class DeleteApplicationService(tables.DeleteAction):
                     % (app_service_id, e.message))
             LOG.info(msg)
             redirect = reverse("horizon:project:application_services:index")
-            usrmsg = _('Failed to delete application service %s' % name)
+            usrmsg = _('Failed to delete application service %s. Details: %s'
+                       % (name, e.message))
             exceptions.handle(request, usrmsg, redirect=redirect)
 
 
