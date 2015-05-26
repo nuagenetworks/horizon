@@ -1,13 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block css %}
-  {{ block.super }}
-  <style type="text/css">
-    {% include 'nuage/css/nuage.css' %}
-  </style>
-{% endblock %}
-
 {% block title %}{% trans "Instances" %}{% endblock %}
 
 {% block main %}

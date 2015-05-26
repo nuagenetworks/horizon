@@ -13,6 +13,26 @@
  *    License for the specific language governing permissions and limitations
  *    under the License.
  */
+.page-header h1 {
+    float: left;
+}
+
+#splash .login {
+    background: url('/static/nuage/files/nuage_300x300.jpg') no-repeat center 0;
+    background-size: 200px 200px
+}
+.page-header {
+    margin: 0 0 20px;
+}
+
+.topbar h1.brand a {
+    background: url('/static/nuage/files/nuage_16x16.png') left center no-repeat;
+    text-indent: 20px;
+    color: #6E6E6E;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 30px;
+}
 .nuage-multi-choice {
     border: 1px solid #CCC;
     border-radius: 5px;

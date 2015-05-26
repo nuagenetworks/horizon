@@ -28,10 +28,10 @@
 
 {% block modal-js %}
   {% if request.user.is_superuser %}
-  <script type="text/javascript">
-    {% include 'nuage/js/NuageLinkedSelect.js' %}
-    {% include 'nuage/networks/script.js' %}
-  </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}nuage/js/NuageLinkedSelect.js"></script>
+    <script type="text/javascript">
+      {% include 'nuage/networks/script.js' %}
+    </script>
   {% endif %}
   {{ block.super }}
 {%  endblock %}
