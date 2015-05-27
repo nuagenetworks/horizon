@@ -51,6 +51,7 @@ function NuageLinkedSelect(data) {
     return obj.id;
   };
   this.page_size = data['page_size'] || 15;
+  this.callback = data['callback']
   this.page = 0;
   this.data = null;
 
@@ -120,6 +121,9 @@ NuageLinkedSelect.prototype.load_data = function(param) {
     },
     complete: function() {
       img.remove();
+      if (self.callback) {
+        self.callback();
+      }
     }
   });
 };

@@ -61,6 +61,14 @@ class CreateSubnetTypeAction(workflows.Action):
                                 required=False)
     sub_id = UnsafeChoiceField(label=_("Subnet choice"),
                                required=False)
+    hidden_org = forms.CharField(widget=forms.HiddenInput,
+                                 required=False)
+    hidden_dom = forms.CharField(widget=forms.HiddenInput,
+                                 required=False)
+    hidden_zone = forms.CharField(widget=forms.HiddenInput,
+                                  required=False)
+    hidden_sub = forms.CharField(widget=forms.HiddenInput,
+                                 required=False)
 
     class Meta:
         name = _("Subnet Type")
@@ -88,16 +96,12 @@ class CreateSubnetTypeAction(workflows.Action):
             choices.append((org['id'], display_name))
         return choices
 
-    def get_hidden_fields(self, context):
-        hidden = True
-        return {}
-
     def is_valid(self):
         valid = super(CreateSubnetTypeAction, self).is_valid()
         if not self.request.user.is_superuser:
             return valid
         if self.data['subnet_type'] == 'vsd_auto':
-            if not self.data['sub_id']:
+            if not self.data['hidden_sub']:
                 self._errors['__all__'] = self.error_class(
                     ['A subnet must be selected below.'])
                 valid = False
@@ -112,7 +116,8 @@ class CreateSubnetTypeAction(workflows.Action):
 
 class CreateSubnetType(workflows.Step):
     action_class = CreateSubnetTypeAction
-    contributes = ("with_subnet", "subnet_type", "sub_id", "org_id")
+    contributes = ("with_subnet", "subnet_type", "org_id", "zone_id", "sub_id",
+        "hidden_org", "hidden_dom", "hidden_zone", "hidden_sub")
 
 
 class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):

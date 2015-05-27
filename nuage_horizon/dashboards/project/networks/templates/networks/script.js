@@ -159,7 +159,7 @@ horizon.modals.init_wizard = function () {
         $footer.find('.button-final').hide();
       }
       $navs.each(function(i) {
-        $this = $(this);
+        var $this = $(this);
         if (i <= _max_visited_step) {
           $this.addClass('done');
         } else {
@@ -174,8 +174,11 @@ horizon.modals.init_wizard = function () {
       // Validate if moving forward, but move backwards without validation
       return (index <= current ||
           _validate_steps(current, index - 1) !== false);
+    },
+    onShow: function(activetab, navigation, index) {
+      _validate_steps(index-2)
     }
-  })
+  });
 };
 
 function L2_L3_optgroups(group, page_data, select) {
@@ -195,12 +198,40 @@ function L2_L3_optgroups(group, page_data, select) {
   }
 }
 
+function callback($hidden) {
+  return function() {
+    var id = $hidden.val();
+    if (!id)
+      return;
+
+    var found = false;
+    $source = this.$source;
+    $source.find('option').each(function () {
+      if (this.value == id) {
+        $source.val(id);
+        $source.trigger('change');
+        found = true;
+      }
+    });
+    if (!found) {
+      $hidden.val('');
+    }
+  }
+}
+
+
 var subnet_select = new NuageLinkedSelect({
   $source: $('#id_sub_id'),
   url: '/project/networks/listSubnets',
   qparams: function(param){
     return {'zone_id': param};
-  }
+  },
+  pre_trigger: function(){
+    var sub_id = this.get_opt().obj['id'];
+    $('#id_hidden_sub').val(sub_id);
+    return true;
+  },
+  callback: callback($('#id_hidden_sub'))
 });
 var zone_select = new NuageLinkedSelect({
   $source: $('#id_zone_id'),
@@ -208,36 +239,52 @@ var zone_select = new NuageLinkedSelect({
   qparams: function(param){
     return {'dom_id': param};
   },
-  next: subnet_select
+  next: subnet_select,
+  pre_trigger: function(){
+    var zone_id = this.get_opt().obj['id'];
+    $('#id_hidden_zone').val(zone_id);
+    return true;
+  },
+  callback: callback($('#id_hidden_zone'))
 });
 var domain_select = new NuageLinkedSelect({
   $source: $('#id_dom_id'),
-  pre_trigger: function() {
+  pre_trigger: function () {
     var type = this.get_opt().obj['type'];
+    var dom_id = this.get_opt().obj['id'];
+    $('#id_hidden_dom').val(dom_id);
     if (type == 'L2') {
       var l2dom_id = this.$source.val();
       subnet_select.clear_opts();
       var opts = subnet_select.get_opts();
       opts[opts.length] = new Option(l2dom_id, l2dom_id);
       subnet_select.$source.val(l2dom_id);
+      $('#id_hidden_sub').val(l2dom_id);
       return false;
     }
     return type == 'L3'
   },
   url: '/project/networks/listDomains',
-  qparams: function(param){
+  qparams: function (param) {
     return {'org_id': param};
   },
-  data_to_opts: function(opts, page_data) {
-    L2_L3_optgroups("L2", page_data, this) ;
-    L2_L3_optgroups("L3", page_data, this) ;
+  data_to_opts: function (opts, page_data) {
+    L2_L3_optgroups("L2", page_data, this);
+    L2_L3_optgroups("L3", page_data, this);
   },
-  next: zone_select
+  next: zone_select,
+  callback: callback($('#id_hidden_dom'))
 });
 var organisation_select = new NuageLinkedSelect({
   $source: $('#id_org_id'),
   url: '/project/networks/listOrganizations',
-  next: domain_select
+  next: domain_select,
+  pre_trigger: function(){
+    var org_id = this.get_opt().obj['id'];
+    $('#id_hidden_org').val(org_id);
+    return true;
+  },
+  callback: callback($('#id_hidden_org'))
 });
 var subnet_type_select = new NuageLinkedSelect({
   $source: $('#id_subnet_type'),
@@ -247,4 +294,8 @@ var subnet_type_select = new NuageLinkedSelect({
   next: organisation_select
 });
 
-subnet_type_select.hide_next();
+if (subnet_type_select.$source.prop("selectedIndex") != 0) {
+  subnet_type_select.$source.trigger('change');
+} else {
+  subnet_type_select.hide_next();
+}
