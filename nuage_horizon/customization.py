@@ -1,3 +1,4 @@
+from dashboards.admin import routers # noqa
 from dashboards.admin.networks import subnets # noqa
 from dashboards.project import applications # noqa
 from dashboards.project import application_domains # noqa

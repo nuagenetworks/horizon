@@ -1,8 +1,8 @@
-from openstack_dashboard.dashboards.project.routers import views
+from openstack_dashboard.dashboards.project.routers import views as original
 from nuage_horizon.dashboards.project.routers import forms
 
 
-class NuageUpdateView(views.UpdateView):
+class NuageUpdateView(original.UpdateView):
     form_class = forms.NuageRouterUpdateForm
 
     def get_initial(self):
@@ -20,3 +20,5 @@ class NuageUpdateView(views.UpdateView):
         if hasattr(router, 'ha'):
             initial['ha'] = router.ha
         return initial
+
+original.CreateView.form_class = forms.NuageRouterCreateForm
