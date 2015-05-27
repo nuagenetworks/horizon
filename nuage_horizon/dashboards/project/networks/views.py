@@ -5,9 +5,9 @@ from django import http
 from django import shortcuts
 
 from openstack_dashboard.dashboards.project.networks import views
-from openstack_dashboard.dashboards.project.networks.ports \
-    import tables as port_tables
 from nuage_horizon.dashboards.project.networks import workflows
+from nuage_horizon.dashboards.project.networks.ports \
+    import tables as nuage_port_tables
 from nuage_horizon.dashboards.project.networks.subnets \
     import tables as nuage_sub_tables
 from horizon import exceptions
@@ -112,7 +112,8 @@ class NuageCreateView(views.CreateView):
 
 
 class NuageDetailView(views.DetailView):
-    table_classes = (nuage_sub_tables.NuageSubnetsTable, port_tables.PortsTable)
+    table_classes = (nuage_sub_tables.NuageSubnetsTable,
+                     nuage_port_tables.PortsTable)
 
 
 def organizationData(request):

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Port Details"%}{% endblock %}
+
+{% block main %}
+  <div class="row">
+    <div class="col-sm-12">
+      {% include "nuage/networks/ports/_detail_overview.html" %}
+      <hr>
+      <div id="allowedaddresspairs">
+        {{ allowedaddresspairs_table.render }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
