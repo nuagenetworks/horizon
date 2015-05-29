@@ -176,3 +176,9 @@
     content: "";
     background: transparent;
 }
+
+.nuage-mac input {
+    border: none;
+    outline: none;
+    font-family: monospace;
+}

@@ -3,5 +3,15 @@
 
 {% block modal-body-right %}
   <h3>{% trans "Description:" %}</h3>
-  <p>{% trans "Create an allowed address pair for this port." %}</p>
+  <p>
+    {% trans "Create an allowed address pair for this port."%}
+    <br/>
+    {% trans "Subnet cidr (1st fixed ip): "%} {{ subnet.cidr }}</p>
 {% endblock %}
+
+{% block modal-js %}
+  {{ block.super }}
+  <script type="text/javascript">
+    {% include 'nuage/networks/ports/_addresspair_script.js' %}
+  </script>
+{%  endblock %}

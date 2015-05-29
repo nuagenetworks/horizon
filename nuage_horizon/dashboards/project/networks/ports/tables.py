@@ -98,8 +98,7 @@ class DeleteAllowedAddressPair(policy.PolicyTargetMixin, tables.DeleteAction):
 
 class AllowedAddressPairsTable(tables.DataTable):
     IP = tables.Column("ip_address",
-                       verbose_name=_("Virtual IP"),
-                       link="horizon:project:networks:ports:detail")
+                       verbose_name=_("Virtual IP"))
     mac = tables.Column('mac_address', verbose_name=_("MAC"))
 
     def get_object_display(self, address_pair):

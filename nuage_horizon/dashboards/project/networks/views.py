@@ -141,8 +141,7 @@ def zoneData(request):
 
 def subnetData(request):
     zone_id = request.GET.get('zone_id', None)
-    subnet_list = neutron.vsd_subnet_list(request,
-                                          vsd_zone_id=zone_id, linked=False)
+    subnet_list = neutron.vsd_subnet_list(request, vsd_zone_id=zone_id)
     subnet_list = [subnet.to_dict() for subnet in subnet_list]
     response = http.HttpResponse(json.dumps(subnet_list, ensure_ascii=False))
     return response

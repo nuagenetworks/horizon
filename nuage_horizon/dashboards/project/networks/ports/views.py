@@ -98,6 +98,9 @@ class AddAllowedAddressPair(horizon_forms.ModalFormView):
         context["port_id"] = self.kwargs['port_id']
         context['submit_url'] = reverse(self.submit_url,
                                         args=(self.kwargs['port_id'],))
+        port = neutron.port_get(self.request, context['port_id'])
+        subnet_id = port['fixed_ips'][0]['subnet_id']
+        context['subnet'] = neutron.subnet_get(self.request, subnet_id)
         return context
 
     def get_initial(self):
