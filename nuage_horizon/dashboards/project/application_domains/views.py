@@ -109,8 +109,13 @@ class DetailView(tables.DataTableView):
         app_domain = self._get_data()
         context["app_domain"] = app_domain
         table = app_domain_tables.ApplicationDomainsTable(self.request)
+        context["url"] = self.get_redirect_url()
         context["actions"] = table.render_row_actions(app_domain)
         return context
+
+    @staticmethod
+    def get_redirect_url():
+        return reverse_lazy('horizon:project:application_domains:index')
 
 
 class CreateApplicationView(app_views.CreateView):

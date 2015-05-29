@@ -103,7 +103,7 @@ class CreateForm(forms.SelfHandlingForm):
 
     def is_valid(self):
         valid = super(CreateForm, self).is_valid()
-        if self.data['from_tier'] == self.data['dest_tier']:
+        if self.data.get('from_tier') == self.data.get('dest_tier'):
             self.errors['dest_tier'] = self.error_class(
                 [_('Destination tier can not be equal to origin tier.')])
             valid = False
