@@ -27,7 +27,7 @@ class CustomWidget(django_forms.Widget):
         self.choices = list(choices)
 
     def render(self, name, value, attrs=None):
-        if value is None: value = ''
+        value = '' if value is None else value
         final_attrs = self.build_attrs(attrs, name=name)
         output = [format_html('<div class="nuage-multi-choice">',
                               form_utils.flatatt(final_attrs))]
@@ -63,9 +63,11 @@ class MultiCheckboxField(forms.Field):
 
     def __init__(self, choices=(), required=True, widget=None, label=None,
                  initial=None, help_text='', *args, **kwargs):
-        super(MultiCheckboxField, self).__init__(required=required, widget=widget,
-                                     label=label, initial=initial,
-                                     help_text=help_text, *args, **kwargs)
+        super(MultiCheckboxField, self).__init__(required=required,
+                                                 widget=widget, label=label,
+                                                 initial=initial,
+                                                 help_text=help_text, *args,
+                                                 **kwargs)
         self.choices = choices
 
     def _get_choices(self):

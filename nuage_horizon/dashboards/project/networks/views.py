@@ -22,8 +22,8 @@ class NuageCreateView(views.CreateView):
     def add_locked_fields(self, workflow, form_data, step_index):
         """Asks each action if form-fields should become read-only.
 
-        Returns a list of tuples (id, locked:boolean) who should be read-only or
-        not.
+        Returns a list of tuples (id, locked:boolean) who should be read-only
+        or not.
         """
         fields = {}
         step = workflow.steps[step_index+1]
@@ -116,14 +116,14 @@ class NuageDetailView(views.DetailView):
                      nuage_port_tables.PortsTable)
 
 
-def organizationData(request):
+def organization_data(request):
     org_list = neutron.vsd_organisation_list(request)
     org_list = [org.to_dict() for org in org_list]
     response = http.HttpResponse(json.dumps(org_list, ensure_ascii=False))
     return response
 
 
-def domainData(request):
+def domain_data(request):
     org_id = request.GET.get('org_id', None)
     dom_list = neutron.vsd_domain_list(request, vsd_organisation_id=org_id)
     dom_list = [org.to_dict() for org in dom_list]
@@ -131,7 +131,7 @@ def domainData(request):
     return response
 
 
-def zoneData(request):
+def zone_data(request):
     dom_id = request.GET.get('dom_id', None)
     zone_list = neutron.vsd_zone_list(request, vsd_domain_id=dom_id)
     zone_list = [zone.to_dict() for zone in zone_list]
@@ -139,7 +139,7 @@ def zoneData(request):
     return response
 
 
-def subnetData(request):
+def subnet_data(request):
     zone_id = request.GET.get('zone_id', None)
     subnet_list = neutron.vsd_subnet_list(request, vsd_zone_id=zone_id)
     subnet_list = [subnet.to_dict() for subnet in subnet_list]

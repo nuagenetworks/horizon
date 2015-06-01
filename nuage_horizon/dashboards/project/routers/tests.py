@@ -17,7 +17,8 @@ from django import http
 from mox import IsA  # noqa
 
 from openstack_dashboard import api
-from openstack_dashboard.dashboards.project.routers import tests as router_tests
+from openstack_dashboard.dashboards.project.routers \
+    import tests as router_tests
 from openstack_dashboard.test import helpers as test
 from openstack_dashboard.usage import quotas
 

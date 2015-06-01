@@ -193,7 +193,7 @@ class VlansTable(tables.DataTable):
                            link=get_subnet_link)
 
     port = tables.Column(get_port, verbose_name=_("Port"),
-                           link=get_port_link)
+                         link=get_port_link)
     type = tables.Column(get_vport_type, verbose_name=_("Type"))
 
     def __init__(self, request, data=None, needs_form_wrapper=None, **kwargs):

@@ -4,7 +4,6 @@ from horizon import tables
 from horizon import exceptions
 
 from django.core.urlresolvers import reverse
-from django import template
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext_lazy
 
@@ -79,12 +78,14 @@ def get_dest_tier_name(flow):
 
 def get_orig_tier_link(flow):
     tier_id = flow['origin_tier']['id']
-    return reverse('horizon:project:applications:tiers:detail', args=(tier_id,))
+    return reverse('horizon:project:applications:tiers:detail',
+                   args=(tier_id,))
 
 
 def get_dest_tier_link(flow):
     tier_id = flow['dest_tier']['id']
-    return reverse('horizon:project:applications:tiers:detail', args=(tier_id,))
+    return reverse('horizon:project:applications:tiers:detail',
+                   args=(tier_id,))
 
 
 class FlowsTable(tables.DataTable):

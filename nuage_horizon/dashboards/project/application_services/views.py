@@ -85,7 +85,8 @@ class UpdateView(forms.ModalFormView):
     def _get_object(self):
         app_service_id = self.kwargs['application_service_id']
         try:
-            return neutron.application_service_get(self.request, app_service_id)
+            return neutron.application_service_get(self.request,
+                                                   app_service_id)
         except Exception:
             redirect = self.success_url
             msg = _('Unable to retrieve Application Service details.')

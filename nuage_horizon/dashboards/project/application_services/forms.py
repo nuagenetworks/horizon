@@ -68,7 +68,8 @@ class CreateForm(forms.SelfHandlingForm):
             messages.success(request, msg)
             return True
         except Exception as e:
-            msg = _('Failed to create Application Service "%s".') % data['name']
+            msg = (_('Failed to create Application Service "%s".')
+                   % data['name'])
             LOG.info(msg + '. Message: ' + e.message)
             error = self.error_class([_('Failed to create service.')])
             self._errors['__all__'] = error
@@ -93,7 +94,8 @@ class UpdateForm(forms.SelfHandlingForm):
             messages.success(request, msg)
             return True
         except Exception:
-            msg = _('Failed to update application service "%s".') % data['name']
+            msg = (_('Failed to update application service "%s".')
+                   % data['name'])
             LOG.info(msg)
             exceptions.handle(request, msg, redirect=self.failure_url)
             return False

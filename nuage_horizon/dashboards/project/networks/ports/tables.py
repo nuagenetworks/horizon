@@ -86,7 +86,8 @@ class DeleteAllowedAddressPair(policy.PolicyTargetMixin, tables.DeleteAction):
             port_id = self.table.kwargs['port_id']
             port = neutron.port_get(request, port_id)
             pairs = port.get('allowed_address_pairs', [])
-            pairs = [pair for pair in pairs if pair['ip_address'] != ip_address]
+            pairs = [pair for pair in pairs
+                     if pair['ip_address'] != ip_address]
             neutron.port_update(request, port_id, allowed_address_pairs=pairs)
         except Exception:
             msg = _('Failed to update port %s')
@@ -110,4 +111,3 @@ class AllowedAddressPairsTable(tables.DataTable):
         row_actions = (DeleteAllowedAddressPair,)
         table_actions = (AddAllowedAddressPair, DeleteAllowedAddressPair)
         hidden_title = False
-

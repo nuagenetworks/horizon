@@ -32,6 +32,3 @@ urls.urlpatterns.append(url(NETWORKS % 'subnets/create',
 urls.urlpatterns.append(
     url(r'^(?P<network_id>[^/]+)/subnets/(?P<subnet_id>[^/]+)/update$',
         views.UpdateView.as_view(), name='editsubnet'))
-
-
-

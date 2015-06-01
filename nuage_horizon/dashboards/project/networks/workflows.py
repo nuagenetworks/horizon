@@ -117,7 +117,7 @@ class CreateSubnetTypeAction(workflows.Action):
 class CreateSubnetType(workflows.Step):
     action_class = CreateSubnetTypeAction
     contributes = ("with_subnet", "subnet_type", "org_id", "zone_id", "sub_id",
-        "hidden_org", "hidden_dom", "hidden_zone", "hidden_sub")
+                   "hidden_org", "hidden_dom", "hidden_zone", "hidden_sub")
 
 
 class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
@@ -126,9 +126,9 @@ class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
                                required=True,
                                initial='.')
     net_partition = forms.CharField(max_length=255,
-                               label=_("Nuage Net Partition"),
-                               required=True,
-                               initial='.')
+                                    label=_("Nuage Net Partition"),
+                                    required=True,
+                                    initial='.')
 
     def __init__(self, request, context, *args, **kwargs):
         super(CreateSubnetInfoAction, self).__init__(request, context, *args,
@@ -268,8 +268,8 @@ class CreateNetwork(net_workflows.CreateNetwork):
                      CreateSubnetInfo,
                      CreateSubnetDetail)
 
-    def __init__(self, request=None, context_seed=None, entry_point=None, *args,
-                 **kwargs):
+    def __init__(self, request=None, context_seed=None, entry_point=None,
+                 *args, **kwargs):
         if not request.user.is_superuser:
             try:
                 CreateNetwork.unregister(CreateSubnetType)

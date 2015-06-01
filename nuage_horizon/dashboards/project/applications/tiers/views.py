@@ -62,8 +62,8 @@ class DetailView(views.HorizonTemplateView):
                                     self.kwargs['tier_id'])
         except Exception:
             redirect = reverse('horizon:project:applications:index')
-            msg = _('Unable to retrieve details for tier "%s".') \
-                  % (self.kwargs['tier_id'])
+            msg = (_('Unable to retrieve details for tier "%s".')
+                   % self.kwargs['tier_id'])
             exceptions.handle(self.request, msg, redirect=redirect)
         return tier
 

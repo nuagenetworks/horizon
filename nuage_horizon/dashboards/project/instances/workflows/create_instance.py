@@ -34,14 +34,15 @@ from nuage_horizon.api import neutron
 LOG = logging.getLogger(__name__)
 
 
-def validate_net_tier_combo(action, actionClass):
-    valid = super(actionClass, action).is_valid()
+def validate_net_tier_combo(action, actionclass):
+    valid = super(actionclass, action).is_valid()
     if action.data.get('tier_id') and action.data.get('network'):
         error = action.error_class([_('Can not select both tier and network')])
         action._errors['__all__'] = error
         valid = False
     if not action.data.get('tier_id') and not action.data.get('network'):
-        error = action.error_class([_('Need to select either tier or network')])
+        error = action.error_class(
+            [_('Need to select either tier or network')])
         action._errors['__all__'] = error
         valid = False
     return valid
@@ -164,8 +165,8 @@ def handle(self, request, context):
             {'device_name': device_name,  # None auto-selects device
              'source_type': 'image',
              'destination_type': 'volume',
-             'delete_on_termination':
-                 int(bool(context['delete_on_terminate'])),
+             'delete_on_termination': int(
+                 bool(context['delete_on_terminate'])),
              'uuid': context['source_id'],
              'boot_index': '0',
              'volume_size': context['volume_size']
@@ -264,5 +265,3 @@ original.LaunchInstance.default_steps = (original.SelectProjectUser,
                                          original.PostCreationStep,
                                          original.SetAdvanced)
 original.LaunchInstance.handle = handle
-
-

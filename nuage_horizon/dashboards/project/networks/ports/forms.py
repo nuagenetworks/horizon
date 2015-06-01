@@ -54,9 +54,9 @@ class MacField(forms.Field):
 
 class AddAllowedAddressPairForm(forms.SelfHandlingForm):
     ip = forms.IPField(label=_("Ip address"),
-                         help_text=_("Virtual IP address"),
-                         version=forms.IPv4 | forms.IPv6,
-                         mask=False)
+                       help_text=_("Virtual IP address"),
+                       version=forms.IPv4 | forms.IPv6,
+                       mask=False)
     mac = MacField(label=_("Mac"), required=False,)
     failure_url = 'horizon:project:networks:ports:detail'
 

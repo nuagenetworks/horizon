@@ -12,9 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from django.conf.urls import url
-
-from nuage_horizon.dashboards.admin.networks.subnets import views
-from openstack_dashboard.dashboards.admin.networks import urls
+from openstack_dashboard.dashboards.project.networks import urls
+from nuage_horizon.dashboards.project.networks import views
 
 
 def should_keep(pattern, name):
@@ -23,15 +22,20 @@ def should_keep(pattern, name):
 
 NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
 urls.urlpatterns = [pat for pat in urls.urlpatterns if
-                    should_keep(pat, 'addsubnet')]
+                    should_keep(pat, 'create')]
 urls.urlpatterns = [pat for pat in urls.urlpatterns if
-                    should_keep(pat, 'editsubnet')]
+                    should_keep(pat, 'detail')]
 
 urls.urlpatterns.append(
-    url(NETWORKS % 'subnets/create', views.CreateView.as_view(),
-        name='addsubnet')
-)
+    url(r'^create$', views.NuageCreateView.as_view(), name='create'))
 urls.urlpatterns.append(
-    url(r'^(?P<network_id>[^/]+)/subnets/(?P<subnet_id>[^/]+)/update$',
-        views.UpdateView.as_view(), name='editsubnet')
-)
+    url(r'^listOrganizations', views.organization_data,
+        name='listOrganizations'))
+urls.urlpatterns.append(
+    url(r'^listDomains$', views.domain_data, name='listDomains'))
+urls.urlpatterns.append(
+    url(r'^listZones', views.zone_data, name='listZones'))
+urls.urlpatterns.append(
+    url(r'^listSubnets', views.subnet_data, name='listSubnets'))
+urls.urlpatterns.append(
+    url(NETWORKS % 'detail', views.NuageDetailView.as_view(), name='detail'))

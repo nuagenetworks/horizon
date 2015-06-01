@@ -99,8 +99,8 @@ class VlanForm(forms.SelfHandlingForm):
 class CreateForm(VlanForm):
 
     @staticmethod
-    def create_gw_vlan(request, gw_port_id, vlan, assigned,
-                            type, subnet_id, port_id):
+    def create_gw_vlan(request, gw_port_id, vlan, assigned, type, subnet_id,
+                       port_id):
         gw_vlan = neutron.nuage_gateway_vlan_create(
             request, gw_port_id=gw_port_id, vlan=vlan)
         if assigned:
@@ -140,8 +140,7 @@ class CreateForm(VlanForm):
             return gw_vlan
         except Exception:
             if gw_vlan:
-                neutron.nuage_gateway_vlan_delete(request,
-                                                       gw_vlan['id'])
+                neutron.nuage_gateway_vlan_delete(request, gw_vlan['id'])
             msg = _('Failed to create Gateway Vlan.')
             LOG.info(msg)
             args = [gw_port_id]
@@ -153,12 +152,11 @@ class CreateForm(VlanForm):
 class UpdateForm(VlanForm):
     def __init__(self, request, *args, **kwargs):
         super(UpdateForm, self).__init__(request, *args, **kwargs)
-        self.fields['vlan'].widget=forms.TextInput(
+        self.fields['vlan'].widget = forms.TextInput(
             attrs={'readonly': 'readonly'})
 
     def delete_gw_vlan(self, gw_vlan_id, request):
-        gw_vlan = neutron.nuage_gateway_vlan_get(self.request,
-                                                           gw_vlan_id)
+        gw_vlan = neutron.nuage_gateway_vlan_get(self.request, gw_vlan_id)
         try:
             vport = gw_vlan.get('vport')
             if vport:

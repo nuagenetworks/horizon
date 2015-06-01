@@ -18,8 +18,8 @@ class CreateView(views.CreateView):
     def add_locked_fields(self, workflow, form_data):
         """Asks each action if form-fields should become read-only.
 
-        Returns a list of tuples (id, locked:boolean) who should be read-only or
-        not.
+        Returns a list of tuples (id, locked:boolean) who should be read-only
+        or not.
         """
         fields = {}
         for step in workflow.steps:

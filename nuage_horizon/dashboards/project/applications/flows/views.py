@@ -62,8 +62,8 @@ class DetailView(views.HorizonTemplateView):
                                     self.kwargs['flow_id'])
         except Exception:
             redirect = reverse('horizon:project:applications:index')
-            msg = _('Unable to retrieve details for flow "%s".') \
-                  % (self.kwargs['flow_id'])
+            msg = (_('Unable to retrieve details for flow "%s".')
+                   % self.kwargs['flow_id'])
             exceptions.handle(self.request, msg, redirect=redirect)
         return flow
 

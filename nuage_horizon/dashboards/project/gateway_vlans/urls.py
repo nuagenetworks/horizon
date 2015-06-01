@@ -13,6 +13,6 @@ urlpatterns = patterns(
     url(r'^$', gw_vlan_views.IndexView.as_view(), name='index'),
     url(gw_vlan % '$', gw_vlan_views.UpdateView.as_view(),
         name='edit'),
-    url(r'^listSubnets$', gw_vlan_views.subnetData, name='listsubnets'),
-    url(r'^listPorts', gw_vlan_views.portData, name='listports'),
+    url(r'^listSubnets$', gw_vlan_views.subnet_data, name='listsubnets'),
+    url(r'^listPorts', gw_vlan_views.port_data, name='listports'),
 )

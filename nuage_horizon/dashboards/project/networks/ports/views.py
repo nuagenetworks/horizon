@@ -105,4 +105,3 @@ class AddAllowedAddressPair(horizon_forms.ModalFormView):
 
     def get_initial(self):
         return {'port_id': self.kwargs['port_id']}
-

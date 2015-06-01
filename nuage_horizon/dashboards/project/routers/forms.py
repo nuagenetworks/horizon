@@ -7,7 +7,8 @@ from horizon import messages
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from openstack_dashboard.dashboards.project.routers import forms as router_forms
+from openstack_dashboard.dashboards.project.routers \
+    import forms as router_forms
 
 from openstack_dashboard import api
 
@@ -29,7 +30,7 @@ class NuageRouterCreateForm(router_forms.CreateForm):
                                ('GRE', _('GRE'))]
         self.fields['tunnel_type'].choices = tunnel_type_choices
         if not request.user.is_superuser:
-            #admin-only fields
+            # admin-only fields
             del self.fields['rd']
             del self.fields['rt']
             del self.fields['tunnel_type']
@@ -80,7 +81,7 @@ class NuageRouterUpdateForm(router_forms.UpdateForm):
                                ('GRE', _('GRE'))]
         self.fields['tunnel_type'].choices = tunnel_type_choices
         if not request.user.is_superuser:
-            #admin-only fields
+            # admin-only fields
             del self.fields['rd']
             del self.fields['rt']
             del self.fields['tunnel_type']

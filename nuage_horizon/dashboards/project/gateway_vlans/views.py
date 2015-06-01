@@ -141,7 +141,7 @@ def valid_gw_subnet(subnet, id_net):
             and not id_net[subnet['network_id']]['router:external'])
 
 
-def subnetData(request):
+def subnet_data(request):
     tenant_id = request.GET.get('tenant_id', request.user.tenant_id)
     subnet_list = neutron.subnet_list(request, tenant_id=tenant_id)
     net_list = neutron.network_list(request, tenant_id=tenant_id)
@@ -152,11 +152,11 @@ def subnetData(request):
     return response
 
 
-def portData(request):
+def port_data(request):
     network_id = request.GET.get('network_id', None)
     port_list = neutron.port_list(request, network_id=network_id)
 
     port_list = [port.to_dict() for port in port_list
-                 if (not port['device_owner'] and not port['device_id']) ]
+                 if (not port['device_owner'] and not port['device_id'])]
     response = http.HttpResponse(json.dumps(port_list, ensure_ascii=False))
     return response

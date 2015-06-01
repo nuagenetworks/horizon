@@ -17,4 +17,4 @@ from nuage_horizon.dashboards.project.instances import views
 from openstack_dashboard.dashboards.project.instances import urls
 
 
-urls.urlpatterns.append(url(r'^listTiers', views.tierData, name='listTiers'))
+urls.urlpatterns.append(url(r'^listTiers', views.tier_data, name='listTiers'))

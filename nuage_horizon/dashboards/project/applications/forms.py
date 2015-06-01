@@ -29,7 +29,8 @@ class CreateForm(forms.SelfHandlingForm):
                 widget=forms.TextInput(attrs={'readonly': 'readonly'}),)
         else:
             app_domains = neutron.application_domain_list(request)
-            domain_choices = [(domain.id, domain.name) for domain in app_domains]
+            domain_choices = [(domain.id, domain.name)
+                              for domain in app_domains]
             self.fields['domain_id'].choices = domain_choices
 
     def handle(self, request, data):

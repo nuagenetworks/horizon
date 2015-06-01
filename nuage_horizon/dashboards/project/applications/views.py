@@ -54,14 +54,15 @@ class DetailView(tables.MultiTableView):
 
     @memoized.memoized_method
     def get_flows_data(self):
+        request = self.request
         try:
             app = self._get_application_data()
-            flows = neutron.flow_list(self.request, app_id=app.id)
+            flows = neutron.flow_list(request, app_id=app.id)
             tiers = self.get_tiers_data()
             key_tiers = dict([(tier['id'], tier) for tier in tiers])
             res = []
             for flow in flows:
-                flow_dict = neutron.flow_get(self.request, flow['id']).to_dict()
+                flow_dict = neutron.flow_get(request, flow['id']).to_dict()
                 if flow_dict['origin_tier']:
                     flow_dict['origin_tier'] = key_tiers[
                         flow_dict['origin_tier']]
@@ -72,7 +73,7 @@ class DetailView(tables.MultiTableView):
         except Exception:
             res = []
             msg = _('Flow list can not be retrieved.')
-            exceptions.handle(self.request, msg)
+            exceptions.handle(request, msg)
         return res
 
     @memoized.memoized_method

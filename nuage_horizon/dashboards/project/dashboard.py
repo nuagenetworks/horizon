@@ -31,8 +31,8 @@ class ApplicationPanels(horizon.PanelGroup):
 
 
 project = horizon.get_dashboard('project')
-#Not the cleanest, but the only possible way since we add our panel after
-#initialisation of horizon.
+# Not the cleanest, but the only possible way since we add our panel after
+# initialisation of horizon.
 panel_groups = project._panel_groups
 panel_groups.insert(
     len(panel_groups), GatewayPanels.slug,
@@ -40,4 +40,3 @@ panel_groups.insert(
 panel_groups.insert(
     len(panel_groups), ApplicationPanels.slug,
     ApplicationPanels(project, panels=ApplicationPanels.panels))
-

@@ -60,8 +60,8 @@ class CreateSubnet(subnet_workflows.CreateSubnet):
                      CreateSubnetInfo,
                      nuage_net_workflows.CreateSubnetDetail)
 
-    def __init__(self, request=None, context_seed=None, entry_point=None, *args,
-                 **kwargs):
+    def __init__(self, request=None, context_seed=None, entry_point=None,
+                 *args, **kwargs):
         if not request.user.is_superuser:
             try:
                 CreateSubnet.unregister(CreateSubnetType)

@@ -13,12 +13,11 @@
 #    under the License.
 import os
 
+from .workflows import create_instance  # noqa
+from . import urls  # noqa
+from . import tables  # noqa
 from horizon import loaders
 
 instances_dir = os.path.dirname(__file__)
 template_dir = os.path.join(instances_dir, "templates")
 loaders.panel_template_dirs['nuage/instances'] = template_dir
-
-from .workflows import create_instance  #noqa
-from . import urls  #noqa
-from . import tables  #noqa

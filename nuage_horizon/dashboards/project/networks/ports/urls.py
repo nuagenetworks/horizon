@@ -27,5 +27,6 @@ for i, pattern in enumerate(original.urlpatterns):
                                       name='detail')
 
 original.urlpatterns.append(
-    url(PORTS % 'addallowedaddresspairs', views.AddAllowedAddressPair.as_view(),
+    url(PORTS % 'addallowedaddresspairs',
+        views.AddAllowedAddressPair.as_view(),
         name='addallowedaddresspairs'))

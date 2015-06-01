@@ -97,8 +97,8 @@ class DetailView(tables.DataTableView):
             id = self.kwargs['app_domain_id']
             app_domain = neutron.application_domain_get(self.request, id)
         except Exception:
-            msg = _('Unable to retrieve details for Application Domain "%s".') \
-                  % (id)
+            msg = (_('Unable to retrieve details for Application Domain "%s".')
+                   % id)
             failure_url = reverse('horizon:project:application_domains:index')
             exceptions.handle(self.request, msg,
                               redirect=failure_url)
@@ -149,4 +149,3 @@ class UpdateApplicationView(app_views.UpdateView):
 
     success_url = get_success_url
     submit_url = get_submit_url
-

@@ -17,7 +17,7 @@ from nuage_horizon.api import neutron
 from openstack_dashboard.dashboards.project.instances import views as original
 
 
-def tierData(request):
+def tier_data(request):
     app_id = request.GET.get('app_id')
     tier_list = neutron.tier_list(request, app_id=app_id)
     tier_list = [tier.to_dict() for tier in tier_list]
