@@ -72,6 +72,10 @@ class DetailView(horizon_tables.DataTableView):
         context["port"] = port
         context["url"] = self.get_redirect_url()
         context["actions"] = table.render_row_actions(port)
+        actions = table.get_row_actions(port)
+        for action in actions:
+            if action.name == tables.AddAllowedAddressPair.name:
+                context['vsd_managed'] = True
         return context
 
     @staticmethod

@@ -53,7 +53,7 @@ class MacField(forms.Field):
 
 
 class AddAllowedAddressPairForm(forms.SelfHandlingForm):
-    ip = forms.IPField(label=_("Ip address"),
+    ip = forms.IPField(label=_("IP address"),
                        help_text=_("Virtual IP address"),
                        version=forms.IPv4 | forms.IPv6,
                        mask=False)

@@ -7,9 +7,11 @@
     <div class="col-sm-12">
       {% include "nuage/networks/ports/_detail_overview.html" %}
       <hr>
-      <div id="allowedaddresspairs">
-        {{ allowedaddresspairs_table.render }}
-      </div>
+      {% if vsd_managed %}
+        <div id="allowedaddresspairs">
+          {{ allowedaddresspairs_table.render }}
+        </div>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

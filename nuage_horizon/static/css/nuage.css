@@ -17,10 +17,10 @@
     float: left;
 }
 
-#splash .login {
-    background: url('/static/nuage/files/nuage_300x300.jpg') no-repeat center 0;
-    background-size: 200px 200px
-}
+/*#splash .login {*/
+    /*background: url('/static/nuage/files/nuage_300x300.jpg') no-repeat center 0;*/
+    /*background-size: 200px 200px*/
+/*}*/
 .page-header {
     margin: 0 0 20px;
 }
@@ -175,6 +175,10 @@
 #selected_tier.dragging li.ui-state-highlight:before {
     content: "";
     background: transparent;
+}
+
+.nuage-mac {
+    cursor: text;
 }
 
 .nuage-mac input {
