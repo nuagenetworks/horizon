@@ -63,7 +63,7 @@ class AddAllowedAddressPairForm(forms.SelfHandlingForm):
     def is_valid(self):
         valid = super(AddAllowedAddressPairForm, self).is_valid()
         mac = ":".join(self.data.getlist('mac'))
-        if mac and not MAC_RGEX.match(mac):
+        if len(mac) > 5 and not MAC_RGEX.match(mac):
             self._errors['mac'] = self.error_class(
                 [_('Invalid mac.')])
             valid = False
@@ -82,7 +82,7 @@ class AddAllowedAddressPairForm(forms.SelfHandlingForm):
 
             current = port.get('allowed_address_pairs', [])
             pair = {'ip_address': data['ip']}
-            if data['mac']:
+            if data['mac'] and len(data['mac']) > 5:
                 pair['mac_address'] = data['mac']
             current.append(pair)
             port = neutron.port_update(request, port_id,
