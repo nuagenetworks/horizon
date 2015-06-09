@@ -28,7 +28,7 @@ class DetailView(tables.DataTableView):
                     vport = neutron.nuage_gateway_vport_get(request,
                                                             vlan['vport'])
                     dict['vport'] = vport
-                    if vport:
+                    if vport and vport.get('subnet'):
                         subnet = neutron.subnet_get(request,
                                                     vport.get('subnet'))
                         dict['subnet'] = subnet
