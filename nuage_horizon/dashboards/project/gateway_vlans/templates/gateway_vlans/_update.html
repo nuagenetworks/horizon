@@ -7,8 +7,8 @@
 {% endblock %}
 
 {% block modal-js %}
+  <script type="text/javascript" src="{{ STATIC_URL }}nuage/js/NuageLinkedSelect.js"></script>
   <script type="text/javascript">
-    {% include 'nuage/js/NuageLinkedSelect.js' %}
     {% include 'nuage/gateway_vlans/script.js' %}
   </script>
 {%  endblock %}
