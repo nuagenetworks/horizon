@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 
 from horizon import exceptions
 from horizon import forms
-from horizon import views
+from horizon import tables
 from horizon.utils import memoized
 
 from nuage_horizon.api import neutron
@@ -12,6 +12,7 @@ from nuage_horizon.dashboards.project.applications.tiers \
     import forms as tier_forms
 from nuage_horizon.dashboards.project.applications.tiers \
     import tables as tier_tables
+from openstack_dashboard.api import nova
 
 
 class CreateView(forms.ModalFormView):
@@ -51,9 +52,20 @@ class CreateView(forms.ModalFormView):
                 "application_name": app.name}
 
 
-class DetailView(views.HorizonTemplateView):
+class DetailView(tables.DataTableView):
+    table_class = tier_tables.InstancesTable
     template_name = 'project/applications/tiers/detail.html'
     page_title = _("Tier Details")
+
+    def get_data(self):
+        tier_id = self.kwargs['tier_id']
+        appdports = neutron.appdport_list(self.request,
+                                          name='appdport_%s' % tier_id)
+        instances = []
+        for port in appdports:
+            server = nova.server_get(self.request, port['device_id'])
+            instances.append(server)
+        return instances
 
     @memoized.memoized_method
     def _get_data(self):

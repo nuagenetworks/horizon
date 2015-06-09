@@ -8,6 +8,9 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext_lazy
 
 from openstack_dashboard import policy
+from openstack_dashboard.api import nova
+from openstack_dashboard.dashboards.project.instances \
+    import tables as instance_tables
 
 from nuage_horizon.api import neutron
 
@@ -93,3 +96,10 @@ class TiersTable(tables.DataTable):
         table_actions = (CreateTier, DeleteTier)
         row_actions = (EditTier, DeleteTier)
         hidden_title = False
+
+
+class InstancesTable(instance_tables.InstancesTable):
+
+    class Meta(instance_tables.InstancesTable.Meta):
+        table_actions = (instance_tables.TerminateInstance,
+                         instance_tables.InstancesFilterAction)

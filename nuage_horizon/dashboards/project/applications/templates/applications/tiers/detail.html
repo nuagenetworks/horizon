@@ -6,6 +6,9 @@
   <div class="row">
     <div class="col-sm-12">
       {% include "nuage/applications/tiers/_detail_overview.html" %}
+      <div id="tier_instance_table">
+      {{ instances_table.render }}
+      </div>
     </div>
   </div>
 {% endblock %}
