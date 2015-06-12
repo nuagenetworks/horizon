@@ -1,6 +1,6 @@
 import logging
 
-from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,6 +11,16 @@ from horizon import messages
 from nuage_horizon.api import neutron
 
 LOG = logging.getLogger(__name__)
+
+
+def validate_port(port):
+    if port == '*':
+        return True
+    try:
+        port = int(port)
+        return 0 < port < 65535
+    except ValueError:
+        raise ValidationError(_("Not a valid port number"))
 
 
 class CreateForm(forms.SelfHandlingForm):
@@ -33,10 +43,12 @@ class CreateForm(forms.SelfHandlingForm):
     dscp = forms.ChoiceField(label=_("DSCP"))
     src_port = forms.CharField(max_length=255,
                                label=_("Source port"),
-                               required=False)
+                               initial='*',
+                               validators=[validate_port])
     dest_port = forms.CharField(max_length=255,
                                 label=_("Destination port"),
-                                required=False)
+                                initial='*',
+                                validators=[validate_port])
     failure_url = 'horizon:project:application_services:index'
 
     def __init__(self, request, *args, **kwargs):
