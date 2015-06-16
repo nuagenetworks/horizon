@@ -38,8 +38,7 @@ class CreateForm(forms.SelfHandlingForm):
     direction = forms.ChoiceField(
         label=_("Direction"),
         choices=[('REFLEXIVE', _('Reflexive')),
-                 ('UNIDIRECTIONAL', _('Unidirectional')),
-                 ('BIDIRECTIONAL', _('Bidirectional'))])
+                 ('UNIDIRECTIONAL', _('Unidirectional'))])
     dscp = forms.ChoiceField(label=_("DSCP"))
     src_port = forms.CharField(max_length=255,
                                label=_("Source port"),
