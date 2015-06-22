@@ -15,10 +15,10 @@
   {% include "horizon/client_side/_script_loader.html" %}
   {% include "horizon/_custom_head_js.html" %}
 </head>
-<body id="{% block body_id %}{% endblock %}" ng-app='hz'>
+<body id="{% block body_id %}{% endblock %}" ng-app='horizon.dashboard-app'>
 <noscript>
   <div class="javascript_disabled_alert">
-    This application requires JavaScript to be enabled on your web browser.
+    {% trans "This application requires JavaScript to be enabled in your web browser." %}
   </div>
 </noscript>
 {% block content %}
