@@ -6,12 +6,12 @@
   <div class="row">
     <div class="col-sm-12">
       {% include "project/networks/ports/_detail_overview.html" %}
-      <hr>
       {% if vsd_managed %}
         <div id="allowedaddresspairs">
           {{ allowedaddresspairs_table.render }}
         </div>
       {% endif %}
+      <hr>
     </div>
   </div>
 {% endblock %}
