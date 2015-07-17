@@ -28,7 +28,6 @@ class PortsTable(original.PortsTable):
         name = "ports"
         verbose_name = _("Ports")
         table_actions = (original.CreatePort,
-                         project_tables.AddAllowedAddressPair,
                          original.DeletePort)
         row_actions = (original.UpdatePort,
                        project_tables.AddAllowedAddressPair,
