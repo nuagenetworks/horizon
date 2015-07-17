@@ -115,6 +115,19 @@ class NuageDetailView(views.DetailView):
     table_classes = (nuage_sub_tables.NuageSubnetsTable,
                      nuage_port_tables.PortsTable)
 
+    def get_subnets_data(self):
+        try:
+            network = self._get_data()
+            fields = ['name', 'id', 'cidr', 'ip_version', 'gateway_ip',
+                      'vsd_managed']
+            subnets = neutron.subnet_list(self.request, network_id=network.id,
+                                          fields=fields)
+        except Exception:
+            subnets = []
+            msg = _('Subnet list can not be retrieved.')
+            exceptions.handle(self.request, msg)
+        return subnets
+
 
 def organization_data(request):
     org_list = neutron.vsd_organisation_list(request)

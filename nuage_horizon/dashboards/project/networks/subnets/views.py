@@ -4,11 +4,16 @@ from django import forms
 from django import http
 from django import shortcuts
 
+from openstack_dashboard.dashboards.project.networks.subnets import utils
 from openstack_dashboard.dashboards.project.networks.subnets import views
+
+from nuage_horizon.api import neutron
 from nuage_horizon.dashboards.project.networks.subnets \
     import workflows as nuage_workflows
+
 from horizon import exceptions
 from horizon import messages
+from horizon.utils import memoized
 
 
 class CreateView(views.CreateView):
@@ -108,3 +113,29 @@ class CreateView(views.CreateView):
 
 class UpdateView(views.UpdateView):
     workflow_class = nuage_workflows.UpdateSubnet
+
+
+@memoized.memoized_method
+def get_data(self):
+    subnet_id = self.kwargs['subnet_id']
+    try:
+        fields = ["vsd_managed", "name", "enable_dhcp", "network_id",
+                  "tenant_id", "dns_nameservers", "gateway_ip",
+                  "ipv6_ra_mode", "allocation_pools", "host_routes",
+                  "ip_version", "ipv6_address_mode", "cidr", "id",
+                  "subnetpool_id"]
+        subnet = neutron.subnet_get(self.request, subnet_id, fields=fields)
+    except Exception:
+        subnet = []
+        msg = _('Unable to retrieve subnet details.')
+        exceptions.handle(self.request, msg,
+                          redirect=self.get_redirect_url())
+    else:
+        if subnet.ip_version == 6:
+            ipv6_modes = utils.get_ipv6_modes_menu_from_attrs(
+                subnet.ipv6_ra_mode, subnet.ipv6_address_mode)
+            subnet.ipv6_modes_desc = utils.IPV6_MODE_MAP.get(ipv6_modes)
+    return subnet
+
+
+views.DetailView.get_data = get_data

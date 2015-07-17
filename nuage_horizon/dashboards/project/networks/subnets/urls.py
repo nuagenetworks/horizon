@@ -21,8 +21,8 @@ NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
 
 
 def should_keep(pattern):
-    return (pattern.name != 'addsubnet' and pattern.name != 'editsubnet') \
-        if hasattr(pattern, 'name') else True
+    return (pattern.name not in ['addsubnet', 'editsubnet']
+            if hasattr(pattern, 'name') else True)
 
 urls.urlpatterns = [pat for pat in urls.urlpatterns if should_keep(pat)]
 
