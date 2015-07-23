@@ -13,13 +13,19 @@
 #    under the License.
 
 from openstack_dashboard.dashboards.project.networks import views as original
+from openstack_dashboard.dashboards.admin.networks \
+    import views as original_admin
 
 from nuage_horizon.dashboards.admin.networks.ports \
     import tables as nuage_port_tables
 from nuage_horizon.dashboards.project.networks.subnets \
     import tables as nuage_sub_tables
+from nuage_horizon.dashboards.admin.networks import forms
 
 
 class NuageDetailView(original.DetailView):
     table_classes = (nuage_sub_tables.NuageSubnetsTable,
                      nuage_port_tables.PortsTable)
+
+
+original_admin.CreateView.form_class = forms.CreateNetwork
