@@ -123,7 +123,7 @@ def get_data(self):
                   "tenant_id", "dns_nameservers", "gateway_ip",
                   "ipv6_ra_mode", "allocation_pools", "host_routes",
                   "ip_version", "ipv6_address_mode", "cidr", "id",
-                  "subnetpool_id"]
+                  "subnetpool_id", "underlay"]
         subnet = neutron.subnet_get(self.request, subnet_id, fields=fields)
     except Exception:
         subnet = []
