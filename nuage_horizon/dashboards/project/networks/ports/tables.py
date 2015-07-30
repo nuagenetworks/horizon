@@ -44,7 +44,8 @@ class AddAllowedAddressPair(policy.PolicyTargetMixin, tables.LinkAction):
             port_id = self.table.kwargs['port_id']
             port = neutron.port_get(request, port_id)
         subnet_id = port['fixed_ips'][0]['subnet_id']
-        subnet = neutron.subnet_get(request, subnet_id)
+        subnet = neutron.subnet_get(request, subnet_id, fields=['vsd_managed',
+                                                                'ip_version'])
         return not subnet['vsd_managed']
 
     def get_link_url(self, port=None):

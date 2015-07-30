@@ -32,6 +32,13 @@ def catch_no_attr_changes(fn):
     return wrapped
 
 
+def router_add_gateway(request, router_id, network_id, enable_snat=None):
+    body = {'network_id': network_id}
+    if enable_snat is not None:
+        body['enable_snat'] = enable_snat
+    neutronclient(request).add_gateway_router(router_id, body)
+
+
 def vsd_organisation_list(request, **params):
     LOG.debug("vsd_organisation_list(): params=%s", params)
     vsd_organisations = neutronclient(request) \

@@ -12,18 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
+from openstack_dashboard.dashboards.project.routers.ports \
+    import views as original
 
-from nuage_horizon.dashboards.project.routers.ports import views as port_views
-
-from horizon import loaders
-
-from . import views
-from . import forms
-from . import urls
-from . import tabs
+from nuage_horizon.dashboards.project.routers.ports import forms
 
 
-routers_dir = os.path.dirname(__file__)
-template_dir = os.path.join(routers_dir, "templates")
-loaders.panel_template_dirs['nuage/routers'] = template_dir
+original.SetGatewayView.form_class = forms.SetGatewayForm
