@@ -439,11 +439,17 @@ class VsdSubnet(NeutronAPIDictWrapper):
 
 
 class NuageGateway(NeutronAPIDictWrapper):
-    pass
+    def __init__(self, apiresource):
+        if 'description' not in apiresource.keys():
+            apiresource['description'] = '-'
+        super(NuageGateway, self).__init__(apiresource)
 
 
 class NuageGatewayPort(NeutronAPIDictWrapper):
-    pass
+    def __init__(self, apiresource):
+        if 'description' not in apiresource.keys():
+            apiresource['description'] = '-'
+        super(NuageGatewayPort, self).__init__(apiresource)
 
 
 class NuageGatewayVlan(NeutronAPIDictWrapper):
