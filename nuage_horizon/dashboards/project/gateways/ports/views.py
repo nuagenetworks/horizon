@@ -33,9 +33,12 @@ class DetailView(tables.DataTableView):
                                                     vport.get('subnet'))
                         dict['subnet'] = subnet
                         if vport.get('port'):
-                            port = neutron.port_get(request,
-                                                    vport['port'])
-                            dict['port'] = port
+                            try:
+                                port = neutron.port_get(request,
+                                                       vport['port'])
+                                dict['port'] = port
+                            except Exception:
+                                dict['port'] = None
                     vlan = neutron.NuageGatewayVlan(dict)
                 vlans.append(vlan)
         except Exception:

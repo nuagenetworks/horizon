@@ -157,6 +157,6 @@ def port_data(request):
     port_list = neutron.port_list(request, network_id=network_id)
 
     port_list = [port.to_dict() for port in port_list
-                 if (not port['device_owner'] and not port['device_id'])]
+                 if (not port['device_id'])]
     response = http.HttpResponse(json.dumps(port_list, ensure_ascii=False))
     return response

@@ -140,11 +140,11 @@ class DeleteGwVlan(tables.DeleteAction):
                 neutron.nuage_gateway_vport_delete(request, vport['id'])
             neutron.nuage_gateway_vlan_delete(request, gw_vlan_id)
         except Exception:
-            msg = _('Failed to delete Gateway Vlan %s')
-            LOG.info(msg, gw_vlan_id)
+            msg = _('Failed to delete Gateway Vlan %s') % gw_vlan_id
+            LOG.info(msg)
             redirect = reverse("horizon:project:gateways:ports:detail",
                                args=[gw_vlan['gatewayport']])
-            exceptions.handle(request, msg % gw_vlan_id, redirect=redirect)
+            exceptions.handle(request, msg, redirect=redirect)
 
 
 def get_subnet(gw_vlan):
