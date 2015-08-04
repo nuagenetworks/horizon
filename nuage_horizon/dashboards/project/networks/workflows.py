@@ -234,10 +234,22 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
                                  choices=[('default', _('Default')),
                                           ('true', _('True')),
                                           ('false', _('False'))])
+    dummy_cidr = forms.IPField(label=_("Network Address"),
+                               initial="",
+                               help_text=_("OS requires a cidr. Fill in dummy "
+                                           "value."),
+                               version=forms.IPv4 | forms.IPv6,
+                               mask=True)
 
     def __init__(self, request, context, *args, **kwargs):
         super(CreateSubnetDetailAction, self).__init__(request, context, *args,
                                                        **kwargs)
+        if context.get('nuage_id') and context['nuage_id'] != ".":
+            vsd_subnet = neutron.vsd_subnet_get(request, context['nuage_id'])
+            request.session['vsd_subnet'] = vsd_subnet
+            if vsd_subnet.get('cidr'):
+                del self.fields['dummy_cidr']
+
         if not request.user.is_superuser or not context.get('network_id'):
             del self.fields['underlay']
         else:
@@ -246,10 +258,11 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
                 del self.fields['underlay']
 
     def get_hidden_fields(self, context):
-        if context['subnet_type'] != 'os':
-            return {'id_enable_dhcp': True}
-        else:
-            return {'id_enable_dhcp': False}
+        vsd_subnet = self.request.session.get('vsd_subnet')
+        hidden = {'id_enable_dhcp': context['subnet_type'] != 'os'}
+        if vsd_subnet:
+            hidden['id_dummy_cidr'] = len(vsd_subnet.get('cidr')) > 0
+        return hidden
 
     class Meta:
         name = _("Subnet Details")
@@ -259,7 +272,7 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
 class CreateSubnetDetail(net_workflows.CreateSubnetDetail):
     action_class = CreateSubnetDetailAction
     contributes = ("enable_dhcp", "ipv6_modes", "allocation_pools",
-                   "dns_nameservers", "host_routes", "underlay")
+                   "dns_nameservers", "host_routes", "underlay", "dummy_cidr")
 
 
 class CreateNetwork(net_workflows.CreateNetwork):
@@ -313,11 +326,11 @@ class CreateNetwork(net_workflows.CreateNetwork):
             network_name = self.context.get('network_name')
         try:
             if data.get('subnet_type') == 'vsd_manual':
-                vsd_subnet = neutron.vsd_subnet_get(request,
-                                                    data['nuage_id'])
-                data['cidr'] = vsd_subnet['cidr']
+                vsd_subnet = request.session.get('vsd_subnet')
+                data['cidr'] = vsd_subnet['cidr'] or data['dummy_cidr']
                 data['ip_version'] = vsd_subnet['ip_version'][-1]
                 data['gateway_ip'] = vsd_subnet['gateway']
+                request.session['vsd_subnet'] = vsd_subnet
             params = {'network_id': network_id,
                       'name': data['subnet_name'],
                       'cidr': data['cidr'],
