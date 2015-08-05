@@ -106,7 +106,7 @@ NuageLinkedSelect.prototype.load_data = function(param) {
     data = this.qparams(param);
 
   var img = document.createElement("img");
-  img.src = "/static/dashboard/img/spinner.gif";
+  img.src = STATIC_URL +"dashboard/img/spinner.gif";
   this.$source.parent().before(img);
 
   $.ajax({
@@ -127,7 +127,6 @@ NuageLinkedSelect.prototype.load_data = function(param) {
     }
   });
 };
-
 NuageLinkedSelect.prototype.show_page = function(page) {
   this.clear_opts();
   var opts = this.get_opts();

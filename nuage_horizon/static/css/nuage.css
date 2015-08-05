@@ -26,7 +26,7 @@
 }
 
 .topbar h1.brand a {
-    background: url('/static/nuage/files/nuage_16x16.png') left center no-repeat;
+    background: url('../files/nuage_16x16.png') left center no-repeat;
     text-indent: 20px;
     color: #6E6E6E;
     font-weight: bold;
@@ -82,7 +82,7 @@
     border-radius: 3px;
     cursor: move;
     padding: 3px 3px 3px 23px;
-    background: #fff url('/static/dashboard/img/drag.png') no-repeat 11px 50%;
+    background: #fff url('../../dashboard/img/drag.png') no-repeat 11px 50%;
 }
 
 .tierlist li em {

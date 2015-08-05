@@ -222,7 +222,7 @@ function callback($hidden) {
 
 var subnet_select = new NuageLinkedSelect({
   $source: $('#id_sub_id'),
-  url: '/project/networks/listSubnets',
+  url: STATIC_URL + '../project/networks/listSubnets',
   qparams: function(param){
     return {'zone_id': param};
   },
@@ -235,7 +235,7 @@ var subnet_select = new NuageLinkedSelect({
 });
 var zone_select = new NuageLinkedSelect({
   $source: $('#id_zone_id'),
-  url: '/project/networks/listZones',
+  url: STATIC_URL + '../project/networks/listZones',
   qparams: function(param){
     return {'dom_id': param};
   },
@@ -264,7 +264,7 @@ var domain_select = new NuageLinkedSelect({
     }
     return type == 'L3'
   },
-  url: '/project/networks/listDomains',
+  url: STATIC_URL + '../project/networks/listDomains',
   qparams: function (param) {
     return {'org_id': param};
   },
@@ -277,7 +277,7 @@ var domain_select = new NuageLinkedSelect({
 });
 var organisation_select = new NuageLinkedSelect({
   $source: $('#id_org_id'),
-  url: '/project/networks/listOrganizations',
+  url: STATIC_URL + '../project/networks/listOrganizations',
   next: domain_select,
   pre_trigger: function(){
     var org_id = this.get_opt().obj['id'];

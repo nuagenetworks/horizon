@@ -57,12 +57,12 @@ $app_select.change(function () {
     return;
 
   var img = document.createElement("img");
-  img.src = "/static/dashboard/img/spinner.gif";
+  img.src = STATIC_URL + "dashboard/img/spinner.gif";
   $submit_tiers.parent().before(img);
 
   $.ajax({
     type: 'GET',
-    url: '/project/instances/listTiers',
+    url: STATIC_URL + '../project/instances/listTiers',
     data: {'app_id': app_id},
     dataType: 'json',
     async: true,
