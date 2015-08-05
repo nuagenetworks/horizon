@@ -239,7 +239,8 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
                                help_text=_("OS requires a cidr. Fill in dummy "
                                            "value."),
                                version=forms.IPv4 | forms.IPv6,
-                               mask=True)
+                               mask=True,
+                               required=False)
 
     def __init__(self, request, context, *args, **kwargs):
         super(CreateSubnetDetailAction, self).__init__(request, context, *args,
@@ -261,7 +262,7 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
         vsd_subnet = self.request.session.get('vsd_subnet')
         hidden = {'id_enable_dhcp': context['subnet_type'] != 'os'}
         if vsd_subnet:
-            hidden['id_dummy_cidr'] = len(vsd_subnet.get('cidr')) > 0
+            hidden['id_dummy_cidr'] = len(str(vsd_subnet.get('cidr'))) > 0
         return hidden
 
     class Meta:
@@ -351,7 +352,7 @@ class CreateNetwork(net_workflows.CreateNetwork):
 
             vsd_subnet = request.session.get('vsd_subnet')
             if data.get('subnet_type') != 'os' and vsd_subnet:
-                data['enable_dhcp'] = vsd_subnet.get('cidr') is not None
+                data['enable_dhcp'] = vsd_subnet.get('gateway') is not None
             self._setup_subnet_parameters(params, data)
 
             subnet = neutron.subnet_create(request, **params)
