@@ -56,7 +56,7 @@ class AddAllowedAddressPairForm(forms.SelfHandlingForm):
     ip = forms.IPField(label=_("IP address"),
                        help_text=_("Virtual IP address"),
                        version=forms.IPv4 | forms.IPv6,
-                       mask=False)
+                       mask=True)
     mac = MacField(label=_("Mac"), required=False,)
     failure_url = 'horizon:project:networks:ports:detail'
 
@@ -73,6 +73,8 @@ class AddAllowedAddressPairForm(forms.SelfHandlingForm):
     def clean(self):
         cleaned_data = super(AddAllowedAddressPairForm, self).clean()
         cleaned_data['mac'] = ":".join(self.data.getlist('mac'))
+        if '/' not in self.data['ip']:
+            cleaned_data['ip'] = self.data['ip']
         return cleaned_data
 
     def handle(self, request, data):
