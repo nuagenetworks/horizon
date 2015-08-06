@@ -2,7 +2,6 @@ import logging
 
 from horizon import workflows
 from horizon import base
-from horizon import forms
 from horizon import exceptions
 
 from django.utils.translation import ugettext_lazy as _
@@ -136,36 +135,9 @@ class UpdateSubnetInfo(nuage_net_workflows.CreateSubnetInfo):
     depends_on = ("network_id", "subnet_id")
 
 
-class UpdateSubnetDetailAction(subnet_workflows.UpdateSubnetDetailAction):
-    underlay = forms.ChoiceField(label=_("Underlay"),
-                                 choices=[('default', _('Default')),
-                                          ('true', _('True')),
-                                          ('false', _('False'))])
-
-    def __init__(self, request, context, *args, **kwargs):
-        super(UpdateSubnetDetailAction, self).__init__(request, context, *args,
-                                                       **kwargs)
-        if not request.user.is_superuser or not context.get('network_id'):
-            del self.fields['underlay']
-        else:
-            network = neutron.network_get(request, context['network_id'])
-            if not network or not network.get('router:external', False):
-                del self.fields['underlay']
-
-    class Meta:
-        name = _("Subnet")
-        help_text = _('Create a subnet associated with the new network.')
-
-
-class UpdateSubnetDetail(subnet_workflows.UpdateSubnetDetail):
-    action_class = UpdateSubnetDetailAction
-    contributes = ("enable_dhcp", "ipv6_modes", "allocation_pools",
-                   "dns_nameservers", "host_routes", "underlay")
-
-
 class UpdateSubnet(subnet_workflows.UpdateSubnet):
     default_steps = (UpdateSubnetInfo,
-                     UpdateSubnetDetail)
+                     subnet_workflows.UpdateSubnetDetail)
 
     def _update_subnet(self, request, data):
         network_id = self.context.get('network_id')
@@ -184,8 +156,6 @@ class UpdateSubnet(subnet_workflows.UpdateSubnet):
             subnet = neutron.subnet_get(request, subnet_id)
             if params['gateway_ip'] == subnet.gateway_ip:
                 del params['gateway_ip']
-            if request.user.is_superuser and data.get('underlay') != 'default':
-                params['underlay'] = data['underlay']
 
             self._setup_subnet_parameters(params, data, is_create=False)
 
