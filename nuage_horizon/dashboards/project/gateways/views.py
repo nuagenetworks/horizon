@@ -32,11 +32,15 @@ class DetailView(tables.DataTableView):
     table_class = port_tables.PortsTable
     template_name = 'nuage/gateways/detail.html'
     page_title = _("Gateway Details: {{ gateway.name }}")
+    failure_url = reverse_lazy('horizon:project:gateways:index')
 
     def get_data(self):
         try:
             gw = self._get_gateway_data()
-            ports = neutron.nuage_gateway_port_list(self.request, gw.id)
+            if gw:
+                ports = neutron.nuage_gateway_port_list(self.request, gw.id)
+            else:
+                ports = []
         except Exception:
             ports = []
             msg = _('Nuage Gateway Port list can not be retrieved.')
@@ -49,8 +53,9 @@ class DetailView(tables.DataTableView):
             gw_id = self.kwargs['gateway_id']
             gateway = neutron.nuage_gateway_get(self.request, gw_id)
         except Exception:
+            gateway = None
             msg = _('Gateway can not be retrieved.')
-            exceptions.handle(self.request, msg)
+            exceptions.handle(self.request, msg, redirect=self.failure_url)
         return gateway
 
     def get_context_data(self, **kwargs):
