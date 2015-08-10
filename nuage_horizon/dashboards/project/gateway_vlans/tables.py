@@ -116,6 +116,11 @@ class DeleteGwVlan(tables.DeleteAction):
     def allowed(self, request, gw_vlan):
         return request.user.is_superuser
 
+    def allowed(self, request, gw_vlan):
+        return (gw_vlan and gw_vlan['vport'] is None
+                and gw_vlan.get('assigned') is None
+                and request.user.is_superuser)
+
     @staticmethod
     def action_present(count):
         return ungettext_lazy(
