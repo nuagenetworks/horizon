@@ -144,7 +144,7 @@ def valid_gw_subnet(subnet, id_net):
 def subnet_data(request):
     tenant_id = request.GET.get('tenant_id', request.user.tenant_id)
     subnet_list = neutron.subnet_list(request, tenant_id=tenant_id)
-    net_list = neutron.network_list(request, tenant_id=tenant_id)
+    net_list = neutron.network_list(request)
     id_net = dict([(net.id, net) for net in net_list])
     subnet_list = [subnet.to_dict() for subnet in subnet_list
                    if valid_gw_subnet(subnet, id_net)]
