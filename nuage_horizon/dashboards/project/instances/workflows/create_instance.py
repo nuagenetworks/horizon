@@ -135,8 +135,9 @@ def boot_instance(request, avail_zone, context, custom_script, dev_mapping_1,
 def create_appdports(appdports, nics, request, tiers):
     for tier_id in tiers:
         appdport = neutron.appdport_create(
-            request, name='appdport_' + tier_id,
-            tenant_id=request.user.tenant_id, tier_id=tier_id)
+            request,
+            tenant_id=request.user.tenant_id,
+            tier_id=tier_id)
         appdports.append(appdport)
         nics.append({"port-id": appdport.id})
 

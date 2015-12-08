@@ -315,7 +315,6 @@ def appdport_list(request, **params):
 def appdport_create(request, **kwargs):
     LOG.debug("appdport_create(): kwargs=%s", kwargs)
     appdport_body = {'appdport': {
-        'name': kwargs['name'],
         'tenant_id': kwargs['tenant_id'],
         'tier_id': kwargs['tier_id']
     }}
