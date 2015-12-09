@@ -13,7 +13,12 @@ class NuageUpdateView(original.UpdateView):
                    'rd': router['rd'],
                    'rt': router['rt'],
                    'tunnel_type': router['tunnel_type'],
-                   'admin_state': router['admin_state_up']}
+                   'admin_state': router['admin_state_up'],
+                   'snat_enabled':
+                       (router.get('external_gateway_info') or {}).get(
+                           'enable_snat'),
+                   'external_gateway_info':
+                       router.get('external_gateway_info')}
         if hasattr(router, 'distributed'):
             initial['mode'] = ('distributed' if router.distributed
                                else 'centralized')

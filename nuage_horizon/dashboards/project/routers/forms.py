@@ -72,19 +72,22 @@ class NuageRouterUpdateForm(router_forms.UpdateForm):
     rt = forms.RegexField(r'\d+:\d+', label=_("Route Target"),
                           required=False)
     tunnel_type = forms.ChoiceField(label=_("Tunneling Type"),
-                                    required=False)
+                                    required=False,
+                                    choices=[('default', _('Default')),
+                                             ('VXLAN', _('VXLAN')),
+                                             ('GRE', _('GRE'))])
+    snat_enabled = forms.BooleanField(label=_("SNAT enabled"), required=False)
 
     def __init__(self, request, *args, **kwargs):
         super(NuageRouterUpdateForm, self).__init__(request, *args, **kwargs)
-        tunnel_type_choices = [('default', _('Default')),
-                               ('VXLAN', _('VXLAN')),
-                               ('GRE', _('GRE'))]
-        self.fields['tunnel_type'].choices = tunnel_type_choices
         if not request.user.is_superuser:
             # admin-only fields
             del self.fields['rd']
             del self.fields['rt']
             del self.fields['tunnel_type']
+        if (not request.user.is_superuser or
+                kwargs['initial']['snat_enabled'] is None):
+            del self.fields['snat_enabled']
 
     def handle(self, request, data):
         try:
@@ -94,11 +97,16 @@ class NuageRouterUpdateForm(router_forms.UpdateForm):
                 params['distributed'] = (data['mode'] == 'distributed')
             if self.ha_allowed:
                 params['ha'] = data['ha']
-            if data['rd']:
+            if 'rd' in data:
                 params['rd'] = data['rd']
-            if data['rt']:
+            if 'rt' in data:
                 params['rt'] = data['rt']
-            if data['tunnel_type'] and data['tunnel_type'] != 'default':
+            if 'snat_enabled' in data:
+                params['external_gateway_info'] = (
+                    self.initial['external_gateway_info'])
+                params['external_gateway_info']['enable_snat'] = (
+                    data['snat_enabled'])
+            if 'tunnel_type' in data and data['tunnel_type'] != 'default':
                 params['tunnel_type'] = data['tunnel_type']
             router = api.neutron.router_update(request, data['router_id'],
                                                **params)
