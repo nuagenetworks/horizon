@@ -352,7 +352,7 @@ class CreateNetwork(net_workflows.CreateNetwork):
 
             vsd_subnet = request.session.get('vsd_subnet')
             if data.get('subnet_type') != 'os' and vsd_subnet:
-                data['enable_dhcp'] = vsd_subnet.get('gateway') is not None
+                data['enable_dhcp'] = vsd_subnet.get('cidr') is not None
             self._setup_subnet_parameters(params, data)
 
             subnet = neutron.subnet_create(request, **params)
