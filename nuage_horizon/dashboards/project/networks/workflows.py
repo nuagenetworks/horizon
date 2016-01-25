@@ -133,7 +133,8 @@ class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
     def __init__(self, request, context, *args, **kwargs):
         super(CreateSubnetInfoAction, self).__init__(request, context, *args,
                                                      **kwargs)
-        del self.fields['with_subnet']
+        if 'with_subnet' in self.fields:
+            del self.fields['with_subnet']
 
     def clean(self):
         cleaned_data = super(workflows.Action, self) \
@@ -276,8 +277,18 @@ class CreateSubnetDetail(net_workflows.CreateSubnetDetail):
                    "dns_nameservers", "host_routes", "underlay", "dummy_cidr")
 
 
+class CreateNetworkInfoAction(net_workflows.CreateNetworkInfoAction):
+    def __init__(self, request, *args, **kwargs):
+        super(CreateNetworkInfoAction, self).__init__(request, *args, **kwargs)
+        del self.fields['with_subnet']
+
+
+class CreateNetworkInfo(net_workflows.CreateNetworkInfo):
+    action_class = CreateNetworkInfoAction
+
+
 class CreateNetwork(net_workflows.CreateNetwork):
-    default_steps = (net_workflows.CreateNetworkInfo,
+    default_steps = (CreateNetworkInfo,
                      CreateSubnetType,
                      CreateSubnetInfo,
                      CreateSubnetDetail)
