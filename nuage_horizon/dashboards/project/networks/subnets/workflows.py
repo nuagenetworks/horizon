@@ -92,6 +92,9 @@ class CreateSubnet(subnet_workflows.CreateSubnet):
                 data['cidr'] = vsd_subnet['cidr']
                 data['ip_version'] = vsd_subnet['ip_version'][-1]
                 data['gateway_ip'] = vsd_subnet['gateway']
+            else:
+                vsd_subnet = request.session.get('vsd_subnet')
+
             params = {'network_id': network_id,
                       'name': data['subnet_name'],
                       'cidr': data['cidr'],
