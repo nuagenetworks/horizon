@@ -343,6 +343,8 @@ class CreateNetwork(net_workflows.CreateNetwork):
                 data['ip_version'] = vsd_subnet['ip_version'][-1]
                 data['gateway_ip'] = vsd_subnet['gateway']
                 request.session['vsd_subnet'] = vsd_subnet
+            else:
+                vsd_subnet = request.session.get('vsd_subnet')
             params = {'network_id': network_id,
                       'name': data['subnet_name'],
                       'cidr': data['cidr'],
@@ -361,7 +363,6 @@ class CreateNetwork(net_workflows.CreateNetwork):
             elif data['gateway_ip'] and data.get('subnet_type') == 'os':
                 params['gateway_ip'] = data['gateway_ip']
 
-            vsd_subnet = request.session.get('vsd_subnet')
             if data.get('subnet_type') != 'os' and vsd_subnet:
                 data['enable_dhcp'] = vsd_subnet.get('cidr') is not None
             self._setup_subnet_parameters(params, data)
