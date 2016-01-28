@@ -44,4 +44,4 @@ def action(self, request, obj_id):
                     args=(neutron_ports, obj_id, request))
     thread.start()
 
-original.TerminateInstance.action = action
+original.DeleteInstance.action = action

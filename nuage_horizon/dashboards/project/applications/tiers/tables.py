@@ -101,5 +101,5 @@ class TiersTable(tables.DataTable):
 class InstancesTable(instance_tables.InstancesTable):
 
     class Meta(instance_tables.InstancesTable.Meta):
-        table_actions = (instance_tables.TerminateInstance,
+        table_actions = (instance_tables.DeleteInstance,
                          instance_tables.InstancesFilterAction)
