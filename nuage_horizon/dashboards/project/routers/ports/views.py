@@ -19,3 +19,4 @@ from nuage_horizon.dashboards.project.routers.ports import forms
 
 
 original.SetGatewayView.form_class = forms.SetGatewayForm
+original.AddInterfaceView.form_class = forms.AddInterface

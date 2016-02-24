@@ -29,6 +29,12 @@ from nuage_horizon.api import neutron
 LOG = logging.getLogger(__name__)
 
 
+class AddInterface(original.AddInterface):
+    def __init__(self, request, *args, **kwargs):
+        super(AddInterface, self).__init__(request, *args, **kwargs)
+        self.fields['ip_address'].widget = forms.HiddenInput()
+
+
 class SetGatewayForm(original.SetGatewayForm):
     snat = forms.ChoiceField(label=_("SNAT"),
                              choices=[("", _("Default")),
