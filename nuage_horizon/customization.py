@@ -15,13 +15,9 @@ from dashboards.admin import networks  # noqa
 from dashboards.admin import routers  # noqa
 from dashboards.admin.networks import ports  # noqa
 from dashboards.admin.networks import subnets  # noqa
-from dashboards.project import applications  # noqa
-from dashboards.project import application_domains  # noqa
-from dashboards.project import application_services  # noqa
 from dashboards.project import dashboard  # noqa
 from dashboards.project import gateways  # noqa
 from dashboards.project import gateway_vlans  # noqa
-from dashboards.project import instances  # noqa
 from dashboards.project import networks  # noqa
 from dashboards.project.networks import ports  # noqa
 from dashboards.project.networks import subnets  # noqa
