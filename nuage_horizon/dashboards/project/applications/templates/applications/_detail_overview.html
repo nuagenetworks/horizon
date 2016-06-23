@@ -1,0 +1,18 @@
+{% load i18n sizeformat %}
+
+<h3>{% trans "Application Overview" %}</h3>
+
+<div class="info detail">
+  <dl class="dl-horizontal">
+    <dt>{% trans "Name" %}</dt>
+    <dd>{{ application.name|default:_("None") }}</dd>
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ application.id|default:_("None") }}</dd>
+    <dt>{% trans "Application Domain" %}</dt>
+    <dd>
+      <a href="{% url 'horizon:project:application_domains:detail' application.associateddomainid %}">
+      {{ application.associateddomainid }}
+      </a>
+    </dd>
+  </dl>
+</div>
