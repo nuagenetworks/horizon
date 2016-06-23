@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Application Domain Details"%}{% endblock %}
+
+{% block main %}
+<div class="row">
+  <div class="col-sm-12">
+    {% include "project/application_domains/_detail_overview.html" %}
+    <hr>
+    <div id="applications">
+      {{ applications_table.render }}
+    </div>
+  </div>
+</div>
+{% endblock %}
