@@ -1,0 +1,20 @@
+{% load i18n sizeformat %}
+
+<h3>{% trans "Application Domain Overview" %}</h3>
+
+<div class="info detail">
+  <dl class="dl-horizontal">
+    <dt>{% trans "Name" %}</dt>
+    <dd>{{ app_domain.name|default:_("None") }}</dd>
+    <dt>{% trans "ID" %}</dt>
+    <dd>{{ app_domain.id|default:_("None") }}</dd>
+    <dt>{% trans "Description" %}</dt>
+    <dd>{{ app_domain.description|default:_("None") }}</dd>
+    <dt>{% trans "Tenant" %}</dt>
+    <dd>{{ app_domain.tenant_id|default:_("None") }}</dd>
+    <dt>{% trans "Domain Template ID" %}</dt>
+    <dd>{{ app_domain.nuage_domain_template|default:_("None") }}</dd>
+    <dt>{% trans "Deployment Policy" %}</dt>
+    <dd>{{ app_domain.applicationDeploymentPolicy|default:_("None") }}</dd>
+  </dl>
+</div>
