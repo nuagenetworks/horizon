@@ -38,3 +38,5 @@ app_panel = ApplicationPanels(project, panels=ApplicationPanels.panels)
 panel_groups = project._panel_groups
 panel_groups[GatewayPanels.slug] = gw_panel
 panel_groups[ApplicationPanels.slug] = app_panel
+
+horizon.Horizon._conf['scss_files'].append('nuage/css/nuage.scss')

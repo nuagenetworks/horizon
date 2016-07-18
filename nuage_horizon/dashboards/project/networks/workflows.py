@@ -278,6 +278,12 @@ class CreateSubnetDetail(net_workflows.CreateSubnetDetail):
 
 
 class CreateNetworkInfoAction(net_workflows.CreateNetworkInfoAction):
+    class Meta(object):
+        name = _("Network")
+        help_text = _('Create a new network. '
+                      'In addition, a subnet associated with the network '
+                      'can be created in the following steps of this wizard.')
+
     def __init__(self, request, *args, **kwargs):
         super(CreateNetworkInfoAction, self).__init__(request, *args, **kwargs)
         del self.fields['with_subnet']
