@@ -2,6 +2,17 @@
 {% load i18n %}
 
 {% block modal-body-right %}
+    <style>
+        .nuage-mac {
+            cursor: wait;
+        }
+
+        .nuage-mac input {
+            border: none;
+            outline: none;
+            font-family: monospace;
+        }
+    </style>
   <h3>{% trans "Description:" %}</h3>
   <p>
     {% trans "Create an allowed address pair for this port."%}
