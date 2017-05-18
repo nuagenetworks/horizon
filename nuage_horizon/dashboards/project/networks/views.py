@@ -6,6 +6,7 @@ from django import shortcuts
 
 from openstack_dashboard.dashboards.project.networks import views
 from nuage_horizon.dashboards.project.networks import workflows
+from nuage_horizon.dashboards.project.networks import tabs
 from nuage_horizon.dashboards.project.networks.ports \
     import tables as nuage_port_tables
 from nuage_horizon.dashboards.project.networks.subnets \
@@ -112,21 +113,7 @@ class NuageCreateView(views.CreateView):
 
 
 class NuageDetailView(views.DetailView):
-    table_classes = (nuage_sub_tables.NuageSubnetsTable,
-                     nuage_port_tables.PortsTable)
-
-    def get_subnets_data(self):
-        try:
-            network = self._get_data()
-            fields = ['name', 'id', 'cidr', 'ip_version', 'gateway_ip',
-                      'vsd_managed']
-            subnets = neutron.subnet_list(self.request, network_id=network.id,
-                                          fields=fields)
-        except Exception:
-            subnets = []
-            msg = _('Subnet list can not be retrieved.')
-            exceptions.handle(self.request, msg)
-        return subnets
+    tab_group_class = tabs.NetworkDetailsTabs
 
 
 def organization_data(request):
