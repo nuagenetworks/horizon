@@ -14,7 +14,10 @@
 
 from django.conf.urls import url
 from openstack_dashboard.dashboards.admin.networks import urls as original
+
 from nuage_horizon.dashboards.admin.networks import views
+from nuage_horizon.dashboards.project.networks.subnets \
+    import views as subnet_views
 
 
 NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
@@ -24,3 +27,7 @@ for i, pattern in enumerate(original.urlpatterns):
         original.urlpatterns[i] = url(NETWORKS % 'detail',
                                       views.NuageDetailView.as_view(),
                                       name='detail')
+    elif getattr(pattern, 'name', '') == 'createsubnet':
+        original.urlpatterns[i] = url(NETWORKS % 'subnets/create',
+                                      subnet_views.CreateView.as_view(),
+                                      name='createsubnet')

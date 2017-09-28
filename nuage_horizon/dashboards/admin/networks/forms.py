@@ -16,13 +16,10 @@ import logging
 
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-
-from openstack_dashboard.dashboards.admin.networks import forms as original
-
 from horizon import exceptions
 from horizon import messages
-
 from openstack_dashboard import api
+from openstack_dashboard.dashboards.admin.networks import forms as original
 
 
 LOG = logging.getLogger(__name__)

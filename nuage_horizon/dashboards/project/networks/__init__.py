@@ -15,8 +15,8 @@ import os
 
 
 from horizon import loaders
-from nuage_horizon.dashboards.project.networks import views
-from . import urls  # noqa
+
+from nuage_horizon.dashboards.project.networks import urls  # noqa
 
 network_dir = os.path.dirname(__file__)
 template_dir = os.path.join(network_dir, "templates")

@@ -1,17 +1,14 @@
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse_lazy
-from django.core.urlresolvers import reverse
-
 from horizon import exceptions
 from horizon import tables
 from horizon.utils import memoized
 
 from nuage_horizon.api import neutron
-
-from nuage_horizon.dashboards.project.gateways \
-    import tables as gateway_tables
 from nuage_horizon.dashboards.project.gateways.ports \
     import tables as port_tables
+from nuage_horizon.dashboards.project.gateways \
+    import tables as gateway_tables
 
 
 class IndexView(tables.DataTableView):

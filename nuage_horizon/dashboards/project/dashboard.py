@@ -19,22 +19,11 @@ import horizon
 class GatewayPanels(horizon.PanelGroup):
     slug = "gateway"
     name = _("Gateway")
-    panels = ('gateways', "gateway_vlans")
-
-
-class ApplicationPanels(horizon.PanelGroup):
-    slug = "application_designer"
-    name = _("Application Designer")
-    panels = ('application_domains',
-              'applications',
-              'application_services')
-
+    panels = ('gateways',)
 
 project = horizon.get_dashboard('project')
 
 gw_panel = GatewayPanels(project, panels=GatewayPanels.panels)
-app_panel = ApplicationPanels(project, panels=ApplicationPanels.panels)
 
 panel_groups = project._panel_groups
 panel_groups[GatewayPanels.slug] = gw_panel
-panel_groups[ApplicationPanels.slug] = app_panel
