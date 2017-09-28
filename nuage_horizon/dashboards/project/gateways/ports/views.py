@@ -1,13 +1,12 @@
-from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse_lazy
-
+from django.utils.translation import ugettext_lazy as _
 from horizon import exceptions
 from horizon import tables
 from horizon.utils import memoized
 
 from nuage_horizon.api import neutron
-from nuage_horizon.dashboards.project.gateway_vlans \
-    import tables as vlan_tables
+from nuage_horizon.dashboards.project.gateways.ports.vlans import \
+    tables as vlan_tables
 
 
 class DetailView(tables.DataTableView):
@@ -36,7 +35,7 @@ class DetailView(tables.DataTableView):
                         if vport.get('port'):
                             try:
                                 port = neutron.port_get(request,
-                                                       vport['port'])
+                                                        vport['port'])
                                 dict['port'] = port
                             except Exception:
                                 dict['port'] = None

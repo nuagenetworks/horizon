@@ -1,21 +1,18 @@
 import logging
 
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 from horizon import exceptions
 from horizon import forms
 from horizon import messages
-
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
-
-from openstack_dashboard.dashboards.project.routers \
-    import forms as router_forms
-
 from openstack_dashboard import api
+from openstack_dashboard.dashboards.project.routers \
+    import forms as original
 
 LOG = logging.getLogger(__name__)
 
 
-class NuageRouterCreateForm(router_forms.CreateForm):
+class NuageRouterCreateForm(original.CreateForm):
     rd = forms.RegexField(r'\d+:\d+', label=_("Route Distinguisher"),
                           required=False)
     rt = forms.RegexField(r'\d+:\d+', label=_("Route Target"),
@@ -66,7 +63,7 @@ class NuageRouterCreateForm(router_forms.CreateForm):
             return False
 
 
-class NuageRouterUpdateForm(router_forms.UpdateForm):
+class NuageRouterUpdateForm(original.UpdateForm):
     rd = forms.RegexField(r'\d+:\d+', label=_("Route Distinguisher"),
                           required=False)
     rt = forms.RegexField(r'\d+:\d+', label=_("Route Target"),

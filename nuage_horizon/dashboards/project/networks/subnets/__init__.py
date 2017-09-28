@@ -11,5 +11,5 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from . import tabs
-from . import urls
+from nuage_horizon.dashboards.project.networks.subnets import tabs  # noqa
+from nuage_horizon.dashboards.project.networks.subnets import urls  # noqa

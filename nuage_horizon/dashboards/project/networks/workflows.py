@@ -1,16 +1,14 @@
 import logging
 
-from nuage_horizon.api import neutron
 from django.utils.translation import ugettext_lazy as _
-
-from openstack_dashboard.dashboards.project.networks import \
-    workflows as net_workflows
-
+from horizon import base
 from horizon import exceptions
 from horizon import forms
 from horizon import workflows
-from horizon import base
+from openstack_dashboard.dashboards.project.networks import \
+    workflows as original
 
+from nuage_horizon.api import neutron
 
 LOG = logging.getLogger(__name__)
 
@@ -61,6 +59,8 @@ class CreateSubnetTypeAction(workflows.Action):
                                 required=False)
     sub_id = UnsafeChoiceField(label=_("Subnet choice"),
                                required=False)
+    ip_version_ = UnsafeChoiceField(label=_("Cidr choice"),
+                                    required=False)
     hidden_org = forms.CharField(widget=forms.HiddenInput,
                                  required=False)
     hidden_dom = forms.CharField(widget=forms.HiddenInput,
@@ -69,21 +69,24 @@ class CreateSubnetTypeAction(workflows.Action):
                                   required=False)
     hidden_sub = forms.CharField(widget=forms.HiddenInput,
                                  required=False)
+    hidden_ip_version_ = forms.CharField(widget=forms.HiddenInput,
+                                         required=False)
 
     class Meta:
         name = _("Subnet Type")
-        help_text = _('Chose the type of subnet you are about to create.')
+        help_text = _('Choose the type of subnet you are about to create.')
 
     def __init__(self, request, context, *args, **kwargs):
         super(CreateSubnetTypeAction, self).__init__(request, context, *args,
                                                      **kwargs)
         if request.user.is_superuser:
-            self.fields['org_id'].choices = [('', _("Chose an Organization"))]
-            self.fields['dom_id'].choices = [('', _("Chose a Domain"))]
-            self.fields['zone_id'].choices = [('', _("Chose a Zone"))]
-            self.fields['sub_id'].choices = [('', _("Chose a Subnet"))]
+            self.fields['org_id'].choices = [('', _("Choose an Organization"))]
+            self.fields['dom_id'].choices = [('', _("Choose a Domain"))]
+            self.fields['zone_id'].choices = [('', _("Choose a Zone"))]
+            self.fields['sub_id'].choices = [('', _("Choose a Subnet"))]
+            self.fields['ip_version_'].choices = [('', _("Choose a cidr"))]
 
-            type_choices = [('', _("Chose a subnet type")),
+            type_choices = [('', _("Choose a subnet type")),
                             ('os', _("OpenStack Managed Subnet")),
                             ('vsd_manual', _("VSD Managed Subnet (Manual)")),
                             ('vsd_auto', _("VSD Managed Subnet (Auto)"))]
@@ -117,10 +120,11 @@ class CreateSubnetTypeAction(workflows.Action):
 class CreateSubnetType(workflows.Step):
     action_class = CreateSubnetTypeAction
     contributes = ("with_subnet", "subnet_type", "org_id", "zone_id", "sub_id",
-                   "hidden_org", "hidden_dom", "hidden_zone", "hidden_sub")
+                   "hidden_org", "hidden_dom", "hidden_zone", "hidden_sub",
+                   "hidden_ip_version_")
 
 
-class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
+class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
     nuage_id = forms.CharField(max_length=255,
                                label=_("Nuage UUID"),
                                required=True,
@@ -160,7 +164,7 @@ class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
                     'id_net_partition': shown,
                     'subnet_name': shown,
                     'id_cidr': hidden,
-                    'id_ip_version': hidden,
+                    'id_ip_version': shown,
                     'id_gateway_ip': hidden,
                     'id_no_gateway': hidden}
         else:
@@ -209,11 +213,24 @@ class CreateSubnetInfoAction(net_workflows.CreateSubnetInfoAction):
                 request, id=context['org_id'])[0]
             request.session['vsd_subnet'] = vsd_subnet
             request.session['vsd_organisation'] = vsd_organisation
+
+            if not self.data['ip_version_']:
+                ip_version = '4'
+            else:
+                ip_version = self.data['ip_version_']
+
+            if str(ip_version) == '4':
+                cidr = vsd_subnet['cidr']
+                gateway = vsd_subnet['gateway']
+            else:
+                cidr = vsd_subnet['ipv6_cidr']
+                gateway = vsd_subnet['ipv6_gateway']
+
             return {'id_nuage_id': vsd_subnet['id'],
                     'id_net_partition': vsd_organisation['name'],
-                    'id_cidr': vsd_subnet['cidr'],
-                    'id_gateway_ip': vsd_subnet['gateway'],
-                    'id_ip_version': vsd_subnet['ip_version'][-1],
+                    'id_cidr': cidr,
+                    'id_gateway_ip': gateway,
+                    'id_ip_version': ip_version,
                     'id_subnet_name': vsd_subnet['name']}
 
     class Meta:
@@ -230,18 +247,11 @@ class CreateSubnetInfo(workflows.Step):
                    "no_gateway", "nuage_id", "net_partition")
 
 
-class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
+class CreateSubnetDetailAction(original.CreateSubnetDetailAction):
     underlay = forms.ChoiceField(label=_("Underlay"),
                                  choices=[('default', _('Default')),
                                           ('true', _('True')),
                                           ('false', _('False'))])
-    dummy_cidr = forms.IPField(label=_("Network Address"),
-                               initial="",
-                               help_text=_("OS requires a cidr. Fill in dummy "
-                                           "value."),
-                               version=forms.IPv4 | forms.IPv6,
-                               mask=True,
-                               required=False)
 
     def __init__(self, request, context, *args, **kwargs):
         super(CreateSubnetDetailAction, self).__init__(request, context, *args,
@@ -249,8 +259,6 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
         if context.get('nuage_id') and context['nuage_id'] != ".":
             vsd_subnet = neutron.vsd_subnet_get(request, context['nuage_id'])
             request.session['vsd_subnet'] = vsd_subnet
-            if vsd_subnet.get('cidr'):
-                del self.fields['dummy_cidr']
 
         if not request.user.is_superuser or not context.get('network_id'):
             del self.fields['underlay']
@@ -261,9 +269,8 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
 
     def get_hidden_fields(self, context):
         vsd_subnet = self.request.session.get('vsd_subnet')
-        hidden = {'id_enable_dhcp': context['subnet_type'] != 'os'}
-        if vsd_subnet:
-            hidden['id_dummy_cidr'] = len(str(vsd_subnet.get('cidr'))) > 0
+        hidden = {'id_enable_dhcp': context['subnet_type'] != 'os',
+                  'id_ipv6_modes': True}
         return hidden
 
     class Meta:
@@ -271,52 +278,68 @@ class CreateSubnetDetailAction(net_workflows.CreateSubnetDetailAction):
         help_text = _('Specify additional attributes for the subnet.')
 
 
-class CreateSubnetDetail(net_workflows.CreateSubnetDetail):
+class CreateSubnetDetail(original.CreateSubnetDetail):
     action_class = CreateSubnetDetailAction
     contributes = ("enable_dhcp", "ipv6_modes", "allocation_pools",
-                   "dns_nameservers", "host_routes", "underlay", "dummy_cidr")
+                   "dns_nameservers", "host_routes", "underlay")
 
 
-class CreateNetworkInfoAction(net_workflows.CreateNetworkInfoAction):
+class CreateNetworkInfoAction(original.CreateNetworkInfoAction):
+    with_subnet = forms.BooleanField(label=_("Create Subnet"),
+                                     widget=forms.CheckboxInput(attrs={
+                                         'class': 'switchable',
+                                         'data-slug': 'with_subnet',
+                                         'data-hide-tab': 'create_network__'
+                                                          'createsubnetinfo'
+                                                          'action,'
+                                                          'create_network__'
+                                                          'createsubnetdetail'
+                                                          'action,'
+                                                          'create_network__'
+                                                          'createsubnettype'
+                                                          'action',
+                                         'data-hide-on-checked': 'false'
+                                     }),
+                                     initial=True,
+                                     required=False)
+
     class Meta(object):
         name = _("Network")
         help_text = _('Create a new network. '
                       'In addition, a subnet associated with the network '
                       'can be created in the following steps of this wizard.')
 
-    def __init__(self, request, *args, **kwargs):
-        super(CreateNetworkInfoAction, self).__init__(request, *args, **kwargs)
-        del self.fields['with_subnet']
 
-
-class CreateNetworkInfo(net_workflows.CreateNetworkInfo):
+class CreateNetworkInfo(original.CreateNetworkInfo):
     action_class = CreateNetworkInfoAction
 
 
-class CreateNetwork(net_workflows.CreateNetwork):
-    default_steps = (CreateNetworkInfo,
-                     CreateSubnetType,
-                     CreateSubnetInfo,
-                     CreateSubnetDetail)
+class CreateNetwork(original.CreateNetwork):
 
     def __init__(self, request=None, context_seed=None, entry_point=None,
                  *args, **kwargs):
         if not request.user.is_superuser:
             try:
+                CreateNetwork.unregister(CreateNetworkInfo)
                 CreateNetwork.unregister(CreateSubnetType)
                 CreateNetwork.unregister(CreateSubnetInfo)
                 CreateNetwork.unregister(CreateSubnetDetail)
             except base.NotRegistered:
                 pass
-            self.default_steps = (net_workflows.CreateNetworkInfo,
-                                  net_workflows.CreateSubnetInfo,
-                                  net_workflows.CreateSubnetDetail)
+            self.default_steps = (original.CreateNetworkInfo,
+                                  original.CreateSubnetInfo,
+                                  original.CreateSubnetDetail)
         else:
             try:
-                CreateNetwork.unregister(net_workflows.CreateSubnetInfo)
-                CreateNetwork.unregister(net_workflows.CreateSubnetDetail)
+                CreateNetwork.unregister(original.CreateNetworkInfo)
+                CreateNetwork.unregister(original.CreateSubnetInfo)
+                CreateNetwork.unregister(original.CreateSubnetDetail)
             except base.NotRegistered:
                 pass
+            self.default_steps = (CreateNetworkInfo,
+                                  CreateSubnetType,
+                                  CreateSubnetInfo,
+                                  CreateSubnetDetail)
         super(CreateNetwork, self).__init__(request, context_seed, entry_point,
                                             *args, **kwargs)
 
@@ -345,9 +368,13 @@ class CreateNetwork(net_workflows.CreateNetwork):
         try:
             if data.get('subnet_type') == 'vsd_manual':
                 vsd_subnet = request.session.get('vsd_subnet')
-                data['cidr'] = vsd_subnet['cidr'] or data['dummy_cidr']
-                data['ip_version'] = vsd_subnet['ip_version'][-1]
-                data['gateway_ip'] = vsd_subnet['gateway']
+                data['ip_version'] = int(data['ip_version'])
+                if data['ip_version'] == 4:
+                    data['cidr'] = vsd_subnet['cidr']
+                    data['gateway_ip'] = vsd_subnet['gateway']
+                else:
+                    data['cidr'] = vsd_subnet['ipv6_cidr']
+                    data['gateway_ip'] = vsd_subnet['ipv6_gateway']
                 request.session['vsd_subnet'] = vsd_subnet
             else:
                 vsd_subnet = request.session.get('vsd_subnet')
@@ -370,7 +397,8 @@ class CreateNetwork(net_workflows.CreateNetwork):
                 params['gateway_ip'] = data['gateway_ip']
 
             if data.get('subnet_type') != 'os' and vsd_subnet:
-                data['enable_dhcp'] = vsd_subnet.get('cidr') is not None
+                data['enable_dhcp'] = (str(data['ip_version']) == '4' and
+                                       vsd_subnet.get('cidr') is not None)
             self._setup_subnet_parameters(params, data)
 
             subnet = neutron.subnet_create(request, **params)
