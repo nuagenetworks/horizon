@@ -3,20 +3,21 @@ import json
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django import http
-
 from horizon import exceptions
 from horizon import forms
 from horizon import tables
 from horizon.utils import memoized
 
 from nuage_horizon.api import neutron
-from . import forms as vlan_forms
-from . import tables as gw_vlan_tables
+from nuage_horizon.dashboards.project.gateways.ports.vlans \
+    import tables as gw_vlan_tables
+from nuage_horizon.dashboards.project.gateways.ports.vlans \
+    import forms as vlan_forms
 
 
 class IndexView(tables.DataTableView):
     table_class = gw_vlan_tables.VlansTable
-    template_name = 'nuage/gateway_vlans/index.html'
+    template_name = 'nuage/gateways/ports/vlans/index.html'
 
     def get_data(self):
         request = self.request
@@ -50,7 +51,7 @@ class CreateView(forms.ModalFormView):
     form_class = vlan_forms.CreateForm
     form_id = "create_gw_vlan_form"
     modal_header = _("Create Gateway Vlan")
-    template_name = 'nuage/gateway_vlans/create.html'
+    template_name = 'nuage/gateways/ports/vlans/create.html'
     success_url = 'horizon:project:gateways:ports:detail'
     failure_url = 'horizon:project:gateways:ports:detail'
     submit_url = 'horizon:project:gateways:ports:createvlan'
@@ -87,10 +88,10 @@ class UpdateView(forms.ModalFormView):
     form_class = vlan_forms.UpdateForm
     form_id = "update_gw_vlan_form"
     modal_header = _("Update Gateway Vlan")
-    template_name = 'nuage/gateway_vlans/update.html'
+    template_name = 'nuage/gateways/ports/vlans/update.html'
     admin_success_url = 'horizon:project:gateways:ports:detail'
-    user_success_url = 'horizon:project:gateway_vlans:index'
-    submit_url = 'horizon:project:gateway_vlans:edit'
+    user_success_url = 'horizon:project:gateways:ports:vlans:index'
+    submit_url = 'horizon:project:gateways:ports:vlans:edit'
     page_title = _("Update Gateway Vlan")
     submit_label = _("Update")
 

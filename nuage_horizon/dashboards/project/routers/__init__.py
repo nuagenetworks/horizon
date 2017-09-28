@@ -14,14 +14,10 @@
 
 import os
 
-from nuage_horizon.dashboards.project.routers.ports import views as port_views
-
 from horizon import loaders
 
-from . import views
-from . import forms
-from . import urls
-from . import tabs
+from nuage_horizon.dashboards.project.routers import tabs  # noqa
+from nuage_horizon.dashboards.project.routers import urls  # noqa
 
 
 routers_dir = os.path.dirname(__file__)

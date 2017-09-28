@@ -11,15 +11,15 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from openstack_dashboard.dashboards.project.networks.ports \
+    import tabs as original_ports_tabs
 from openstack_dashboard.dashboards.project.networks import tabs \
     as original
 
 from nuage_horizon.dashboards.project.networks.subnets import tabs as \
     subnets_tabs
 
-from nuage_horizon.dashboards.project.networks.ports import tabs as ports_tabs
-
 
 class NetworkDetailsTabs(original.NetworkDetailsTabs):
     tabs = (original.OverviewTab, subnets_tabs.SubnetsTab,
-            ports_tabs.PortsTab, )
+            original_ports_tabs.PortsTab, )

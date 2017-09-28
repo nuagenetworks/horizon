@@ -197,14 +197,14 @@ function L2_L3_optgroups(group, page_data, select) {
 
 var subnet_select = new NuageLinkedSelect({
   $source: $('#id_sub_id'),
-  url: '/project/networks/listSubnets',
+  ajax_url: '/project/networks/listSubnets',
   qparams: function(param){
     return {'zone_id': param};
   }
 });
 var zone_select = new NuageLinkedSelect({
   $source: $('#id_zone_id'),
-  url: '/project/networks/listZones',
+  ajax_url: '/project/networks/listZones',
   qparams: function(param){
     return {'dom_id': param};
   },
@@ -224,7 +224,7 @@ var domain_select = new NuageLinkedSelect({
     }
     return type == 'L3'
   },
-  url: '/project/networks/listDomains',
+  ajax_url: '/project/networks/listDomains',
   qparams: function(param){
     return {'org_id': param};
   },
@@ -236,7 +236,7 @@ var domain_select = new NuageLinkedSelect({
 });
 var organisation_select = new NuageLinkedSelect({
   $source: $('#id_org_id'),
-  url: '/project/networks/listOrganizations',
+  ajax_url: '/project/networks/listOrganizations',
   next: domain_select
 });
 var subnet_type_select = new NuageLinkedSelect({

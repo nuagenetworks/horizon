@@ -12,30 +12,29 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from django.conf.urls import url
-from openstack_dashboard.dashboards.project.networks import urls
+from openstack_dashboard.dashboards.project.networks import urls as original
+
 from nuage_horizon.dashboards.project.networks import views
+from nuage_horizon.dashboards.project.networks.subnets \
+    import views as subnet_views
 
 
-def should_keep(pattern, name):
-    return pattern.name != name if hasattr(pattern, 'name') else True
+for i, pattern in enumerate(original.urlpatterns):
+    if getattr(pattern, 'name', '') == 'create':
+        original.urlpatterns[i] = url(r'^create$',
+                                      views.NuageCreateView.as_view(),
+                                      name='create')
+    elif getattr(pattern, 'name', '') == 'createsubnet':
+        original.urlpatterns[i] = url(original.NETWORKS % 'subnets/create',
+                                      subnet_views.CreateView.as_view(),
+                                      name='createsubnet')
 
-
-NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
-urls.urlpatterns = [pat for pat in urls.urlpatterns if
-                    should_keep(pat, 'create')]
-urls.urlpatterns = [pat for pat in urls.urlpatterns if
-                    should_keep(pat, 'detail')]
-
-urls.urlpatterns.append(
-    url(r'^create$', views.NuageCreateView.as_view(), name='create'))
-urls.urlpatterns.append(
+original.urlpatterns.append(
     url(r'^listOrganizations', views.organization_data,
         name='listOrganizations'))
-urls.urlpatterns.append(
+original.urlpatterns.append(
     url(r'^listDomains$', views.domain_data, name='listDomains'))
-urls.urlpatterns.append(
+original.urlpatterns.append(
     url(r'^listZones', views.zone_data, name='listZones'))
-urls.urlpatterns.append(
+original.urlpatterns.append(
     url(r'^listSubnets', views.subnet_data, name='listSubnets'))
-urls.urlpatterns.append(
-    url(NETWORKS % 'detail', views.NuageDetailView.as_view(), name='detail'))

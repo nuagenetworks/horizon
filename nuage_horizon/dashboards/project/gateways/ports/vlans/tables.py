@@ -1,13 +1,12 @@
 import logging
 
-from horizon import tables
-from horizon import exceptions
-from horizon import messages
-
 from django import shortcuts
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext_lazy
+from horizon import tables
+from horizon import exceptions
+from horizon import messages
 
 from nuage_horizon.api import neutron
 
@@ -34,7 +33,7 @@ class CreateGwVlan(tables.LinkAction):
 class AssignGwVlan(tables.LinkAction):
     name = "assign"
     verbose_name = _("Assign Gateway Vlan")
-    url = "horizon:project:gateway_vlans:edit"
+    url = "horizon:project:gateways:ports:vlans:edit"
     classes = ("ajax-modal", "btn-associate")
 
     def allowed(self, request, gw_vlan):
@@ -99,7 +98,8 @@ class DeleteVport(tables.Action):
             redirect = reverse("horizon:project:gateways:ports:detail",
                                args=[gw_vlan['gatewayport']])
         else:
-            redirect = reverse("horizon:project:gateway_vlans:index")
+            redirect = reverse("horizon:project:gateways:ports:"
+                               "vlans:index")
         vport = gw_vlan.get('vport')
         try:
             if vport:
@@ -113,8 +113,6 @@ class DeleteVport(tables.Action):
 
 
 class DeleteGwVlan(tables.DeleteAction):
-    def allowed(self, request, gw_vlan):
-        return request.user.is_superuser
 
     def allowed(self, request, gw_vlan):
         return (gw_vlan and gw_vlan['vport'] is None

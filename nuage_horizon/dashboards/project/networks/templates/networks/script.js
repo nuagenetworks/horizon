@@ -109,6 +109,12 @@ horizon.modals.init_wizard = function () {
         $('#' + id).val(value);
       });
     }
+    select_box = $('#id_ip_version');
+    if (select_box && 'id_ip_version' in formData) {
+        old_parent = select_box.parent()
+        select_box.insertBefore(select_box.parent());
+        old_parent.remove();
+    }
 
     var lockedFields = response.locked_fields;
     if (lockedFields) {
@@ -219,23 +225,50 @@ function callback($hidden) {
   }
 }
 
+ip_version_load_data = function(param){
+  this.clear_opts();
+  selected_subnet = subnet_select.get_opt().obj;
+  var opts = this.get_opts();
+
+  var opt = new Option(selected_subnet['cidr'], 4);
+  opt.obj = selected_subnet;
+  opts[opts.length] = opt;
+
+  opt = new Option(selected_subnet['ipv6_cidr'], 6);
+  opt.obj = selected_subnet;
+  opts[opts.length] = opt;
+}
+
+var ip_version_select = new NuageLinkedSelect({
+  $source: $('#id_ip_version_'),
+  pre_trigger: function(){
+    debugger
+    var ip_version = this.get_opt().value;
+    $('#id_hidden_ip_version_').val(ip_version);
+    return False
+  },
+  callback: callback($('#id_hidden_ip')),
+  load_data: ip_version_load_data
+});
 
 var subnet_select = new NuageLinkedSelect({
   $source: $('#id_sub_id'),
-  url: STATIC_URL + '../project/networks/listSubnets',
+  ajax_url: STATIC_URL + '../project/networks/listSubnets',
   qparams: function(param){
     return {'zone_id': param};
   },
+  next: ip_version_select,
   pre_trigger: function(){
     var sub_id = this.get_opt().obj['id'];
     $('#id_hidden_sub').val(sub_id);
-    return true;
+    subnet_type = this.get_opt().obj['ip_version'];
+    return subnet_type == 'DUALSTACK';
   },
   callback: callback($('#id_hidden_sub'))
 });
 var zone_select = new NuageLinkedSelect({
   $source: $('#id_zone_id'),
-  url: STATIC_URL + '../project/networks/listZones',
+  ajax_url: STATIC_URL + '../project/networks/listZones',
   qparams: function(param){
     return {'dom_id': param};
   },
@@ -264,7 +297,7 @@ var domain_select = new NuageLinkedSelect({
     }
     return type == 'L3'
   },
-  url: STATIC_URL + '../project/networks/listDomains',
+  ajax_url: STATIC_URL + '../project/networks/listDomains',
   qparams: function (param) {
     return {'org_id': param};
   },
@@ -277,7 +310,7 @@ var domain_select = new NuageLinkedSelect({
 });
 var organisation_select = new NuageLinkedSelect({
   $source: $('#id_org_id'),
-  url: STATIC_URL + '../project/networks/listOrganizations',
+  ajax_url: STATIC_URL + '../project/networks/listOrganizations',
   next: domain_select,
   pre_trigger: function(){
     var org_id = this.get_opt().obj['id'];

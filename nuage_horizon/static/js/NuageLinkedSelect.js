@@ -19,7 +19,9 @@
  param $source: The jquery object of the <select> being the trigger.
  param next: A NuageLinkedSelect who should be updated when the $source
     is triggered ($source.change).
- param url: The ajax command used to fill the $source with data.
+ param ajax_url: The ajax command used to fill the $source with data.
+ param load_data: function executed to populate dropdown. Defaults to loading
+    data via ajax using ajax_url
  param qparams: A function that returns a json object that should be send as
     data. This function takes 1 parameter, which is the value of the previous
     <select>
@@ -37,10 +39,44 @@
      String to be used as value for the <Option>. Default is ajax-obj.id.
      One function parameter: a single Ajax object.
  */
+
+ajax_load_data = function(param) {
+  if (this.ajax_url == null) {
+    return
+  }
+  var self = this;
+  var data = {};
+  if (this.qparams)
+    data = this.qparams(param);
+
+  var img = document.createElement("img");
+  img.src = STATIC_URL +"dashboard/img/spinner.gif";
+  this.$source.parent().before(img);
+
+  $.ajax({
+    type: 'GET',
+    url: this.ajax_url,
+    data: data,
+    dataType: 'json',
+    async: true,
+    success: function (data) {
+      self.data = data;
+      self.show_page(0);
+    },
+    complete: function() {
+      img.remove();
+      if (self.callback) {
+        self.callback();
+      }
+    }
+  });
+};
+
 function NuageLinkedSelect(data) {
   this.$source = data['$source'];
   this.next = data['next'];
-  this.url = data['url'];
+  this.ajax_url = data['ajax_url'];
+  this.load_data = data['load_data'] || ajax_load_data;
   this.qparams = data['qparams'];
   this.pre_trigger = data['pre_trigger'];
   this.data_to_opts = data['data_to_opts'];
@@ -70,7 +106,7 @@ function NuageLinkedSelect(data) {
     }
 
     if (!opt.custom && self.next) {
-      if (self.next.url)
+      if (self.next.load_data != null)
         self.next.load_data(self.$source.val());
       self.next.show();
     } else if (opt.custom_func) {
@@ -88,7 +124,7 @@ NuageLinkedSelect.prototype.hide_next = function() {
 };
 
 NuageLinkedSelect.prototype.hide = function() {
-  if (this.url) { //if data is ajax-loaded > clear data on hide.
+  if (this.ajax_url) { //if data is ajax-loaded > clear data on hide.
     this.clear_opts();
   }
   this.$source.parent().parent().hide();
@@ -99,34 +135,6 @@ NuageLinkedSelect.prototype.show = function() {
   this.$source.parent().parent().show();
 };
 
-NuageLinkedSelect.prototype.load_data = function(param) {
-  var self = this;
-  var data = {};
-  if (this.qparams)
-    data = this.qparams(param);
-
-  var img = document.createElement("img");
-  img.src = STATIC_URL +"dashboard/img/spinner.gif";
-  this.$source.parent().before(img);
-
-  $.ajax({
-    type: 'GET',
-    url: self.url,
-    data: data,
-    dataType: 'json',
-    async: true,
-    success: function (data) {
-      self.data = data;
-      self.show_page(0);
-    },
-    complete: function() {
-      img.remove();
-      if (self.callback) {
-        self.callback();
-      }
-    }
-  });
-};
 NuageLinkedSelect.prototype.show_page = function(page) {
   this.clear_opts();
   var opts = this.get_opts();
