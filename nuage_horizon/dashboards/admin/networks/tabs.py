@@ -11,13 +11,17 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from openstack_dashboard.dashboards.project.networks.ports \
-    import tables as port_tables
-from openstack_dashboard.dashboards.project.networks.ports \
-    import tabs as original
+from openstack_dashboard.dashboards.admin.networks import views
 
-from nuage_horizon.dashboards.project.networks.ports import tables
+from openstack_dashboard.dashboards.admin.networks.agents import tabs \
+    as agents_tabs
+from nuage_horizon.dashboards.project.networks.subnets import tabs as \
+    subnets_tabs
+from openstack_dashboard.dashboards.admin.networks.ports \
+    import tables as ports_tables
 
 
-class PortsTab(original.PortsTab):
-    table_classes = (tables.PortsTable,)
+class NetworkDetailsTabs(views.NetworkDetailsTabs):
+    tabs = (views.OverviewTab, subnets_tabs.SubnetsTab,
+            ports_tables.PortsTab,
+            agents_tabs.DHCPAgentsTab, )

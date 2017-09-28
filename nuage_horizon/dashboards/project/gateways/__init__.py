@@ -13,8 +13,9 @@
 #    under the License.
 import os
 
-from . import panel
 from horizon import loaders
+
+from nuage_horizon.dashboards.project.gateways import panel  # noqa
 
 
 app_dir = os.path.dirname(__file__)

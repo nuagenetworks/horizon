@@ -3,20 +3,20 @@ import json
 from django import forms
 from django import http
 from django import shortcuts
-
+from django.utils.translation import ugettext_lazy as _
+from horizon import exceptions
+from horizon import messages
+from horizon.utils import memoized
 from openstack_dashboard.dashboards.project.networks.subnets import utils
-from openstack_dashboard.dashboards.project.networks.subnets import views
+from openstack_dashboard.dashboards.project.networks.subnets \
+    import views as original
 
 from nuage_horizon.api import neutron
 from nuage_horizon.dashboards.project.networks.subnets \
     import workflows as nuage_workflows
 
-from horizon import exceptions
-from horizon import messages
-from horizon.utils import memoized
 
-
-class CreateView(views.CreateView):
+class CreateView(original.CreateView):
     workflow_class = nuage_workflows.CreateSubnet
     ajax_template_name = 'nuage/networks/create.html'
 
@@ -107,12 +107,8 @@ class CreateView(views.CreateView):
             response = http.HttpResponse(json.dumps(data))
             response["X-Horizon-Add-To-Field"] = field_id
             return response
-        next_url = self.request.REQUEST.get(workflow.redirect_param_name, None)
+        next_url = self.request.POST.get(workflow.redirect_param_name, None)
         return shortcuts.redirect(next_url or workflow.get_success_url())
-
-
-class UpdateView(views.UpdateView):
-    workflow_class = nuage_workflows.UpdateSubnet
 
 
 @memoized.memoized_method
@@ -138,4 +134,4 @@ def get_data(self):
     return subnet
 
 
-views.DetailView.get_data = get_data
+original.DetailView.get_data = get_data

@@ -3,20 +3,16 @@ import json
 from django import forms
 from django import http
 from django import shortcuts
-
-from openstack_dashboard.dashboards.project.networks import views
-from nuage_horizon.dashboards.project.networks import workflows
-from nuage_horizon.dashboards.project.networks import tabs
-from nuage_horizon.dashboards.project.networks.ports \
-    import tables as nuage_port_tables
-from nuage_horizon.dashboards.project.networks.subnets \
-    import tables as nuage_sub_tables
 from horizon import exceptions
 from horizon import messages
+from openstack_dashboard.dashboards.project.networks import views as original
+
 from nuage_horizon.api import neutron
+from nuage_horizon.dashboards.project.networks import tabs
+from nuage_horizon.dashboards.project.networks import workflows
 
 
-class NuageCreateView(views.CreateView):
+class NuageCreateView(original.CreateView):
     workflow_class = workflows.CreateNetwork
     ajax_template_name = 'nuage/networks/create.html'
 
@@ -108,12 +104,8 @@ class NuageCreateView(views.CreateView):
             response = http.HttpResponse(json.dumps(data))
             response["X-Horizon-Add-To-Field"] = field_id
             return response
-        next_url = self.request.REQUEST.get(workflow.redirect_param_name, None)
+        next_url = self.request.POST.get(workflow.redirect_param_name, None)
         return shortcuts.redirect(next_url or workflow.get_success_url())
-
-
-class NuageDetailView(views.DetailView):
-    tab_group_class = tabs.NetworkDetailsTabs
 
 
 def organization_data(request):
@@ -145,3 +137,6 @@ def subnet_data(request):
     subnet_list = [subnet.to_dict() for subnet in subnet_list]
     response = http.HttpResponse(json.dumps(subnet_list, ensure_ascii=False))
     return response
+
+
+original.DetailView.tab_group_class = tabs.NetworkDetailsTabs

@@ -1,13 +1,14 @@
+from django.utils.translation import ugettext_lazy as _
 from horizon import exceptions
-
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.project.networks.subnets \
-    import tabs as def_tabs
+    import tabs as original
+
 from nuage_horizon.dashboards.project.networks.subnets \
     import tables as nuage_sub_tables
 
 
-class SubnetsTab(def_tabs.SubnetsTab):
+class SubnetsTab(original.SubnetsTab):
     table_classes = (nuage_sub_tables.NuageSubnetsTable,)
 
     def get_subnets_data(self):
@@ -24,7 +25,7 @@ class SubnetsTab(def_tabs.SubnetsTab):
         return subnets
 
 
-class OverviewTab(def_tabs.OverviewTab):
+class OverviewTab(original.OverviewTab):
     template_name = "nuage/networks/subnets/_detail_overview.html"
 
-def_tabs.SubnetDetailTabs.tabs = (OverviewTab,)
+original.SubnetDetailTabs.tabs = (OverviewTab,)

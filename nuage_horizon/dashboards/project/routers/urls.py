@@ -12,18 +12,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from django.conf.urls import url
-from openstack_dashboard.dashboards.project.routers import urls
+from openstack_dashboard.dashboards.project.routers import urls as original
+
 from nuage_horizon.dashboards.project.routers import views
 
 
-ROUTER_URL = r'^(?P<router_id>[^/]+)/%s'
-
-
-def should_keep(pattern):
-    return pattern.name != 'update' if hasattr(pattern, 'name') else True
-
-urls.urlpatterns = [pat for pat in urls.urlpatterns if should_keep(pat)]
-
-urls.urlpatterns.append(url(ROUTER_URL % 'update',
-                            views.NuageUpdateView.as_view(),
-                            name='update'))
+for i, pattern in enumerate(original.urlpatterns):
+    if getattr(pattern, 'name', '') == 'update':
+        original.urlpatterns[i] = url(original.ROUTER_URL % 'update',
+                                      views.NuageUpdateView.as_view(),
+                                      name='update')

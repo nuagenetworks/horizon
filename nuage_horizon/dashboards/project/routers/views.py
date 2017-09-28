@@ -1,4 +1,5 @@
 from openstack_dashboard.dashboards.project.routers import views as original
+
 from nuage_horizon.dashboards.project.routers import forms
 
 
@@ -12,7 +13,7 @@ class NuageUpdateView(original.UpdateView):
                    'name': router['name'],
                    'rd': router['rd'],
                    'rt': router['rt'],
-                   'tunnel_type': router['tunnel_type'],
+                   'tunnel_type': router.get('tunnel_type'),
                    'admin_state': router['admin_state_up'],
                    'snat_enabled':
                        (router.get('external_gateway_info') or {}).get(

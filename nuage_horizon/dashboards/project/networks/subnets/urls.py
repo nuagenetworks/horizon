@@ -12,23 +12,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from django.conf.urls import url
-from nuage_horizon.dashboards.project.networks.subnets import views
-
 from openstack_dashboard.dashboards.project.networks import urls
 
+from nuage_horizon.dashboards.project.networks.subnets import views
 
-NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
 
-
-def should_keep(pattern):
-    return (pattern.name not in ['addsubnet', 'editsubnet']
-            if hasattr(pattern, 'name') else True)
-
-urls.urlpatterns = [pat for pat in urls.urlpatterns if should_keep(pat)]
-
-urls.urlpatterns.append(url(NETWORKS % 'subnets/create',
-                            views.CreateView.as_view(),
-                            name='addsubnet'))
-urls.urlpatterns.append(
-    url(r'^(?P<network_id>[^/]+)/subnets/(?P<subnet_id>[^/]+)/update$',
-        views.UpdateView.as_view(), name='editsubnet'))
+for i, pattern in enumerate(urls.urlpatterns):
+    if getattr(pattern, 'name', '') == 'addsubnet':
+        urls.urlpatterns[i] = url(urls.NETWORKS % 'subnets/create',
+                                  views.CreateView.as_view(),
+                                  name='addsubnet')

@@ -1,11 +1,10 @@
 from django.utils.translation import ugettext_lazy as _
-
 from openstack_dashboard.dashboards.project.networks.subnets import \
-    tables as def_tables
+    tables as original
 from horizon import tables
 
 
-class NuageSubnetsTable(def_tables.SubnetsTable):
+class NuageSubnetsTable(original.SubnetsTable):
     vsd_managed = tables.Column("vsd_managed",
                                 verbose_name=_("VSD Managed"))
 
@@ -15,5 +14,5 @@ class NuageSubnetsTable(def_tables.SubnetsTable):
         if not request.user.is_superuser:
             del self.columns['vsd_managed']
 
-    class Meta(def_tables.SubnetsTable.Meta):
+    class Meta(original.SubnetsTable.Meta):
         pass
