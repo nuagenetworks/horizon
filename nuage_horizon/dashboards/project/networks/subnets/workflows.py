@@ -26,7 +26,7 @@ class CreateSubnetTypeAction(nuage_net_workflows.CreateSubnetTypeAction):
 
     class Meta:
         name = _("Subnet Type")
-        help_text = _('Chose the type of subnet you are about to create.')
+        help_text = _('Choose the type of subnet you are about to create.')
 
 
 class CreateSubnetType(workflows.Step):

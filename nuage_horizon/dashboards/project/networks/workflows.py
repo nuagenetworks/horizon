@@ -163,7 +163,7 @@ class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
             return {'id_nuage_id': shown,
                     'id_net_partition': shown,
                     'subnet_name': shown,
-                    'id_cidr': hidden,
+                    'id_cidr': shown,
                     'id_ip_version': shown,
                     'id_gateway_ip': hidden,
                     'id_no_gateway': hidden}
@@ -268,7 +268,6 @@ class CreateSubnetDetailAction(original.CreateSubnetDetailAction):
                 del self.fields['underlay']
 
     def get_hidden_fields(self, context):
-        vsd_subnet = self.request.session.get('vsd_subnet')
         hidden = {'id_enable_dhcp': context['subnet_type'] != 'os',
                   'id_ipv6_modes': True}
         return hidden
