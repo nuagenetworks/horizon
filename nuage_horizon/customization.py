@@ -22,9 +22,9 @@ from dashboards.project import dashboard  # noqa
 from dashboards.project import gateways  # noqa
 from dashboards.project import networks  # noqa
 from dashboards.project.networks import subnets  # noqa
+from dashboards.project import access_and_security  # noqa
 from dashboards.project import routers  # noqa
 from dashboards.project.routers import ports  # noqa
-
 
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 # Add nuage_horizon/static to the Django static_dirs.
