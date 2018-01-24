@@ -42,5 +42,3 @@ class CreateNetwork(original.CreateNetwork):
                                      }),
                                      initial=True,
                                      required=False)
-
-
