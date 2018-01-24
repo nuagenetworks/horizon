@@ -1,16 +1,17 @@
-# Copyright 2015 Alcatel-Lucent USA Inc.
+# Copyright 2018 NOKIA
 #
-# Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
-#        http://www.apache.org/licenses/LICENSE-2.0
+#         http://www.apache.org/licenses/LICENSE-2.0
 #
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 from openstack_dashboard.api.neutron import *  # noqa
 
 LOG = logging.getLogger(__name__)
@@ -175,6 +176,28 @@ def nuage_gateway_vport_delete(request, gw_vport_id):
     return neutronclient(request).delete_nuage_gateway_vport(gw_vport_id)
 
 
+def nuage_security_group_create(request, params):
+    LOG.debug("nuage_security_group_create(): name=%s", params['name'])
+    body = {
+        'security_group':
+            params
+    }
+    sg = neutronclient(request).create_security_group(
+        body=body).get('security_group')
+    return NuageSecurityGroup(sg)
+
+
+def nuage_security_group_update(request, sg_id, params):
+    LOG.debug("nuage_security_group_update(): name=%s", params['name'])
+    body = {
+        'security_group':
+            params
+    }
+    sg = neutronclient(request).update_security_group(
+        sg_id, body=body).get('security_group')
+    return NuageSecurityGroup(sg)
+
+
 class VsdOrganisation(NeutronAPIDictWrapper):
     pass
 
@@ -210,4 +233,8 @@ class NuageGatewayVlan(NeutronAPIDictWrapper):
 
 
 class NuageGatewayVport(NeutronAPIDictWrapper):
+    pass
+
+
+class NuageSecurityGroup(NeutronAPIDictWrapper):
     pass

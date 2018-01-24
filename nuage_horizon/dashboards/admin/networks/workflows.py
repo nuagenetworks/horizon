@@ -35,4 +35,3 @@ class NuageCreateNetwork(original.CreateNetwork):
             context_seed=context_seed,
             entry_point=entry_point,
             *args, **kwargs)
-
