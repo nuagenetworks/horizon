@@ -22,6 +22,7 @@ from dashboards.project import dashboard  # noqa
 from dashboards.project import gateways  # noqa
 from dashboards.project import networks  # noqa
 from dashboards.project.networks import subnets  # noqa
+from dashboards.project import security_groups  # noqa
 from dashboards.project import routers  # noqa
 from dashboards.project.routers import ports  # noqa
 
