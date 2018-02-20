@@ -28,7 +28,6 @@ for i, pattern in enumerate(original.urlpatterns):
                                       views.NuageCreateView.as_view(),
                                       name='create')
     elif getattr(pattern, 'name', '') == 'update':
-        original.urlpatterns[i] = url(
-            r'^(?P<security_group_id>[^/]+)/update/$',
-            views.NuageUpdateView.as_view(),
-            name='update')
+        original.urlpatterns[i] = url(r'^(?P<security_group_id>[^/]+)/update/$',
+                                      views.NuageUpdateView.as_view(),
+                                      name='update')

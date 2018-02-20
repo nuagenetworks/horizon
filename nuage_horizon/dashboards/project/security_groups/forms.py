@@ -40,3 +40,4 @@ class UpdateNuageGroup(original.UpdateGroup):
     def _call_network_api(self, request, data):
         sg_id = data.pop('id')
         return nuage_api.nuage_security_group_update(request, sg_id, data)
+

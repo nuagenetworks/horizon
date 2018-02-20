@@ -14,7 +14,7 @@
 
 import json
 
-from django import form
+from django import forms
 from openstack_dashboard.dashboards.project.security_groups \
     import views as original
 
@@ -41,3 +41,4 @@ class NuageUpdateView(original.UpdateView):
 
 class NuageIndexView(original.IndexView):
     table_class = tables.NuageSecurityGroupsTable
+
