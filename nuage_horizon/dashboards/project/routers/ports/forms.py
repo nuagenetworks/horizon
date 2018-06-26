@@ -19,10 +19,12 @@ from django.utils.translation import ugettext_lazy as _
 from horizon import exceptions
 from horizon import forms
 from horizon import messages
+
+from nuage_horizon.api import neutron
+
 from openstack_dashboard.dashboards.project.routers.ports \
     import forms as original
 
-from nuage_horizon.api import neutron
 
 LOG = logging.getLogger(__name__)
 
@@ -44,15 +46,15 @@ class SetGatewayForm(original.SetGatewayForm):
             enable_snat = (data['snat'] == 'enabled'
                            if data.get('snat') else None)
             neutron.router_add_gateway(request,
-                                       data['router_id'],
+                                       self.initial['router_id'],
                                        data['network_id'],
                                        enable_snat)
             msg = _('Gateway interface is added')
-            LOG.debug(msg)
             messages.success(request, msg)
             return True
         except Exception as e:
-            msg = _('Failed to set gateway %s') % e
-            LOG.info(msg)
+            LOG.info('Failed to set gateway to router %(id)s: %(exc)s',
+                     {'id': self.initial['router_id'], 'exc': e})
+            msg = _('Failed to set gateway: %s') % e
             redirect = reverse(self.failure_url)
             exceptions.handle(request, msg, redirect=redirect)
