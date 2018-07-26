@@ -26,8 +26,11 @@
     data. This function takes 1 parameter, which is the value of the previous
     <select>
  param pre_trigger: A function which will be executed before Ajax
-    call happens. This function can return false or true to cancel or
-    continue. Default null. No function parameters. Use 'this' to access
+    call happens. This function can return NUAGELINKEDSELECT_ABORT or
+     NUAGELINKEDSELECT_CONTINUE, NUAGELINKEDSELECT_SKIP1
+     OR NUAGELINKEDSELECT_SKIP2 to respectively cancel, continue, skip 1 step,
+      skip 2 steps in the chain.
+      Default null. No function parameters. Use 'this' to access
     the NuageLinkedSelect object.
  param data_to_opts: A function that receives the <select> options and the
     json data as input. It is up to the function how to turn the data into
@@ -39,6 +42,11 @@
      String to be used as value for the <Option>. Default is ajax-obj.id.
      One function parameter: a single Ajax object.
  */
+
+NUAGELINKEDSELECT_ABORT = 0
+NUAGELINKEDSELECT_CONTINUE = 1
+NUAGELINKEDSELECT_SKIP1 = 2
+NUAGELINKEDSELECT_SKIP2 = 3
 
 ajax_load_data = function(param) {
   if (this.ajax_url == null) {
@@ -99,16 +107,26 @@ function NuageLinkedSelect(data) {
     }
 
     var opt = self.get_opt();
+    var next = self.next
     if (!opt.custom && self.pre_trigger) {
       var result = self.pre_trigger();
-      if (!result)
+       /*
+       Determine whether to abort, skip or continue the chain.
+       We write the first case like '!result' to be backwards compatible with code
+       that returns false in order to abort
+       */
+      if (!result) // NUAGELINKEDSELECT_ABORT
         return;
+      else if (result == NUAGELINKEDSELECT_SKIP1 && next)
+        next = next.next
+      else if (result == NUAGELINKEDSELECT_SKIP2 && next && next.next)
+        next = next.next.next
     }
 
-    if (!opt.custom && self.next) {
-      if (self.next.load_data != null)
-        self.next.load_data(self.$source.val());
-      self.next.show();
+    if (!opt.custom && next) {
+      if (next.load_data != null)
+        next.load_data(self.$source.val());
+      next.show();
     } else if (opt.custom_func) {
       opt.custom_func();
     }
