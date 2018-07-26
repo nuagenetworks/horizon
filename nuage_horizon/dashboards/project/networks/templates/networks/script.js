@@ -227,7 +227,9 @@ function callback($hidden) {
 
 ip_version_load_data = function(param){
   this.clear_opts();
-  selected_subnet = subnet_select.get_opt().obj;
+  var type = domain_select.get_opt().obj['type'];
+  var selected_subnet = (type == 'L2' ? domain_select.get_opt().obj : subnet_select.get_opt().obj);
+
   var opts = this.get_opts();
 
   var opt = new Option(selected_subnet['cidr'], 4);
@@ -242,10 +244,19 @@ ip_version_load_data = function(param){
 var ip_version_select = new NuageLinkedSelect({
   $source: $('#id_ip_version_'),
   pre_trigger: function(){
-    debugger
     var ip_version = this.get_opt().value;
     $('#id_hidden_ip_version_').val(ip_version);
-    return False
+    fill_gateway(ip_version);
+
+    if (domain_select.get_opt().obj['type'] == 'L3')
+    {
+        selected_subnet = subnet_select.get_opt().obj;
+        var is_dhcp_enabled = (ip_version == 4 && selected_subnet['cidr'])
+        || (ip_version == 6 && selected_subnet['ipv6_cidr']);
+
+        $('#id_enable_dhcp').prop('checked', is_dhcp_enabled);
+    }
+    return false;
   },
   callback: callback($('#id_hidden_ip')),
   load_data: ip_version_load_data
@@ -262,7 +273,18 @@ var subnet_select = new NuageLinkedSelect({
     var sub_id = this.get_opt().obj['id'];
     $('#id_hidden_sub').val(sub_id);
     subnet_type = this.get_opt().obj['ip_version'];
-    return subnet_type == 'DUALSTACK';
+
+    if(subnet_type == 'DUALSTACK')
+     {
+       $('#id_enable_dhcp').prop('checked', false); // just reset here, will be set by ip_version_select
+       return NUAGELINKEDSELECT_CONTINUE;
+     }
+     else
+     {
+       $('#id_enable_dhcp').prop('checked', this.get_opt().obj['cidr'] ? true : false);
+       fill_gateway(4);
+       return NUAGELINKEDSELECT_ABORT;
+     }
   },
   callback: callback($('#id_hidden_sub'))
 });
@@ -276,7 +298,7 @@ var zone_select = new NuageLinkedSelect({
   pre_trigger: function(){
     var zone_id = this.get_opt().obj['id'];
     $('#id_hidden_zone').val(zone_id);
-    return true;
+    return NUAGELINKEDSELECT_CONTINUE;
   },
   callback: callback($('#id_hidden_zone'))
 });
@@ -286,16 +308,33 @@ var domain_select = new NuageLinkedSelect({
     var type = this.get_opt().obj['type'];
     var dom_id = this.get_opt().obj['id'];
     $('#id_hidden_dom').val(dom_id);
-    if (type == 'L2') {
+    disable_checkbox('id_no_gateway');
+    if(type == 'L3')
+        return NUAGELINKEDSELECT_CONTINUE;
+    else if (type == 'L2') {
+      $('#id_enable_dhcp').prop('checked', this.get_opt().obj['dhcp_managed']);
+      if(!this.get_opt().obj['dhcp_managed'])
+      {
+      enable_checkbox('id_no_gateway');
+      }
+
       var l2dom_id = this.$source.val();
       subnet_select.clear_opts();
       var opts = subnet_select.get_opts();
       opts[opts.length] = new Option(l2dom_id, l2dom_id);
       subnet_select.$source.val(l2dom_id);
       $('#id_hidden_sub').val(l2dom_id);
-      return false;
+
+      if(this.get_opt().obj['dhcp_managed'] && this.get_opt().obj['ip_type'] == 'DUALSTACK')
+        return NUAGELINKEDSELECT_SKIP2; // skip zone and subnet selection as those are for L3
+      else
+        {
+        fill_gateway(4);
+        return NUAGELINKEDSELECT_ABORT; // no cidr selection needed
+        }
     }
-    return type == 'L3'
+    else
+      console.error('Unable to determine whether L2 or L3 domain');
   },
   ajax_url: STATIC_URL + '../project/networks/listDomains',
   qparams: function (param) {
@@ -315,14 +354,29 @@ var organisation_select = new NuageLinkedSelect({
   pre_trigger: function(){
     var org_id = this.get_opt().obj['id'];
     $('#id_hidden_org').val(org_id);
-    return true;
+    return NUAGELINKEDSELECT_CONTINUE;
   },
   callback: callback($('#id_hidden_org'))
 });
 var subnet_type_select = new NuageLinkedSelect({
   $source: $('#id_subnet_type'),
   pre_trigger: function() {
-    return this.$source.val() == 'vsd_auto';
+
+   // reset
+   $(organisation_select.$source).prop('selectedIndex',0).trigger('change');
+   enable_checkbox('id_enable_dhcp');
+   enable_checkbox('id_no_gateway');
+
+    if(this.$source.val() == 'vsd_auto')
+    {
+      disable_checkbox('id_enable_dhcp');
+      return NUAGELINKEDSELECT_CONTINUE;
+    }
+    else
+    {
+      enable_checkbox('id_enable_dhcp');
+      return NUAGELINKEDSELECT_ABORT;
+    }
   },
   next: organisation_select
 });
@@ -331,4 +385,30 @@ if (subnet_type_select.$source.prop("selectedIndex") != 0) {
   subnet_type_select.$source.trigger('change');
 } else {
   subnet_type_select.hide_next();
+}
+
+function fill_gateway(ip_version) {
+  // determine the correct gateway from what the user selected in the form
+  var obj = domain_select.get_opt().obj['type'] == 'L2' ? domain_select.get_opt().obj : subnet_select.get_opt().obj;
+  gateway = obj[ip_version == 4 ? 'gateway' : 'ipv6_gateway'];
+
+  // fill the hidden gateway field
+  $('#id_hidden_gateway_').val(gateway ? gateway : "");
+
+  // fill the no_gateway checkbox
+  $('#id_no_gateway').prop('checked', gateway ? false : true); // TODO adapt formData system to fill checkbox (cleaner)
+}
+
+function enable_checkbox(id)
+{
+  /* went with this implementations because
+      - attribute 'disabled' causes value to be ignored when submitting the form
+      - attribute 'readonly' does not work on checkboxes
+  */
+  $("#"+id).attr('onclick','');
+}
+
+function disable_checkbox(id)
+{
+  $("#"+id).attr('onclick','return false;');
 }
