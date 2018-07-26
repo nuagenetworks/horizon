@@ -31,7 +31,9 @@ class CreateSubnetTypeAction(nuage_net_workflows.CreateSubnetTypeAction):
 
 class CreateSubnetType(workflows.Step):
     action_class = CreateSubnetTypeAction
-    contributes = ("with_subnet", "subnet_type", "sub_id", "org_id",)
+    contributes = ("with_subnet", "subnet_type", "org_id", "zone_id", "sub_id",
+                   "hidden_org", "hidden_dom", "hidden_zone", "hidden_sub",
+                   "hidden_ip_version_", "hidden_gateway_")
 
 
 class CreateSubnetInfoAction(nuage_net_workflows.CreateSubnetInfoAction):
@@ -82,25 +84,12 @@ class CreateSubnet(original.CreateSubnet):
 
     def handle(self, request, data):
         network_id = self.context.get('network_id')
-        network_name = self.context.get('network_name')
         try:
-            if data.get('subnet_type') == 'vsd_manual':
-                vsd_subnet = neutron.vsd_subnet_get(request,
-                                                    data['nuage_id'])
-                data['ip_version'] = int(data['ip_version'])
-                if data['ip_version'] == 4:
-                    data['cidr'] = vsd_subnet['cidr']
-                    data['gateway_ip'] = vsd_subnet['gateway']
-                else:
-                    data['cidr'] = vsd_subnet['ipv6_cidr']
-                    data['gateway_ip'] = vsd_subnet['ipv6_gateway']
-            else:
-                vsd_subnet = request.session.get('vsd_subnet')
-
             params = {'network_id': network_id,
                       'name': data['subnet_name'],
                       'cidr': data['cidr'],
-                      'ip_version': int(data['ip_version'])}
+                      'ip_version': int(data['ip_version']),
+                      'enable_dhcp': data['enable_dhcp']}
             if request.user.is_superuser and data.get('subnet_type') != 'os':
                 params['nuagenet'] = data['nuage_id']
                 params['net_partition'] = data['net_partition']
@@ -108,14 +97,9 @@ class CreateSubnet(original.CreateSubnet):
                     and data.get('underlay') != 'default'):
                 params['underlay'] = data['underlay']
 
-            if data['no_gateway']:
-                params['gateway_ip'] = None
-            elif data['gateway_ip'] and data.get('subnet_type') == 'os':
-                params['gateway_ip'] = data['gateway_ip']
+            params['gateway_ip'] = (
+                None if data['no_gateway'] else data['gateway_ip'])
 
-            if data.get('subnet_type') != 'os' and vsd_subnet:
-                data['enable_dhcp'] = (str(data['ip_version']) == '4' and
-                                       vsd_subnet.get('cidr') is not None)
             self._setup_subnet_parameters(params, data)
 
             subnet = neutron.subnet_create(request, **params)
@@ -130,7 +114,7 @@ class CreateSubnet(original.CreateSubnet):
                     ' %(reason)s')
             redirect = self.get_failure_url()
             exceptions.handle(request,
-                              msg % {"sub": data['cidr'], "net": network_name,
+                              msg % {"sub": data['cidr'], "net": network_id,
                                      "reason": e},
                               redirect=redirect)
             return False
