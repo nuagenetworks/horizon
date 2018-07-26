@@ -71,6 +71,8 @@ class CreateSubnetTypeAction(workflows.Action):
                                  required=False)
     hidden_ip_version_ = forms.CharField(widget=forms.HiddenInput,
                                          required=False)
+    hidden_gateway_ = forms.CharField(widget=forms.HiddenInput,
+                                      required=False)
 
     class Meta:
         name = _("Subnet Type")
@@ -86,8 +88,7 @@ class CreateSubnetTypeAction(workflows.Action):
             self.fields['sub_id'].choices = [('', _("Choose a Subnet"))]
             self.fields['ip_version_'].choices = [('', _("Choose a cidr"))]
 
-            type_choices = [('', _("Choose a subnet type")),
-                            ('os', _("OpenStack Managed Subnet")),
+            type_choices = [('os', _("OpenStack Managed Subnet")),
                             ('vsd_manual', _("VSD Managed Subnet (Manual)")),
                             ('vsd_auto', _("VSD Managed Subnet (Auto)"))]
             self.fields['subnet_type'].choices = type_choices
@@ -121,7 +122,7 @@ class CreateSubnetType(workflows.Step):
     action_class = CreateSubnetTypeAction
     contributes = ("with_subnet", "subnet_type", "org_id", "zone_id", "sub_id",
                    "hidden_org", "hidden_dom", "hidden_zone", "hidden_sub",
-                   "hidden_ip_version_")
+                   "hidden_ip_version_", "hidden_gateway_")
 
 
 class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
@@ -165,16 +166,17 @@ class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
                     'subnet_name': shown,
                     'id_cidr': shown,
                     'id_ip_version': shown,
-                    'id_gateway_ip': hidden,
-                    'id_no_gateway': hidden}
+                    'id_gateway_ip': shown,
+                    'id_no_gateway': shown}
         else:
             return {'id_nuage_id': shown,
                     'id_net_partition': shown,
                     'subnet_name': shown,
                     'id_cidr': shown,
                     'id_ip_version': shown,
-                    'id_gateway_ip': hidden,
-                    'id_no_gateway': hidden}
+                    'id_gateway_ip': shown if context['hidden_gateway_'] else hidden,
+                    'id_no_gateway': shown,
+                    'address_source': context['enable_dhcp']}  # managed
 
     def get_locked_fields(self, context, form_data):
         if context['subnet_type'] != 'vsd_manual' \
@@ -190,6 +192,7 @@ class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
         if 'id_cidr' in form_data:
             locked_fields['id_cidr'] = locked and form_data['id_cidr']
             locked_fields['id_ip_version'] = locked and form_data['id_cidr']
+            locked_fields['id_gateway_ip'] = locked and form_data['id_cidr']
         return locked_fields
 
     def get_form_data(self, context, request):
@@ -221,15 +224,13 @@ class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
 
             if str(ip_version) == '4':
                 cidr = vsd_subnet['cidr']
-                gateway = vsd_subnet['gateway']
             else:
                 cidr = vsd_subnet['ipv6_cidr']
-                gateway = vsd_subnet['ipv6_gateway']
 
             return {'id_nuage_id': vsd_subnet['id'],
                     'id_net_partition': vsd_organisation['name'],
                     'id_cidr': cidr,
-                    'id_gateway_ip': gateway,
+                    'id_gateway_ip': context['hidden_gateway_'],
                     'id_ip_version': ip_version,
                     'id_subnet_name': vsd_subnet['name']}
 
@@ -257,8 +258,14 @@ class CreateSubnetDetailAction(original.CreateSubnetDetailAction):
         super(CreateSubnetDetailAction, self).__init__(request, context, *args,
                                                        **kwargs)
         if context.get('nuage_id') and context['nuage_id'] != ".":
-            vsd_subnet = neutron.vsd_subnet_get(request, context['nuage_id'])
-            request.session['vsd_subnet'] = vsd_subnet
+            try:
+                vsd_subnet = neutron.vsd_subnet_get(request, context['nuage_id'])
+            except Exception as e:
+                msg = "Failed to find Nuage UUID {} on VSD"\
+                    .format(context['nuage_id'])
+                exceptions.handle(request, msg, redirect=False)
+            else:
+                request.session['vsd_subnet'] = vsd_subnet
 
         if not request.user.is_superuser or not context.get('network_id'):
             del self.fields['underlay']
@@ -268,7 +275,7 @@ class CreateSubnetDetailAction(original.CreateSubnetDetailAction):
                 del self.fields['underlay']
 
     def get_hidden_fields(self, context):
-        hidden = {'id_enable_dhcp': context['subnet_type'] != 'os',
+        hidden = {'id_enable_dhcp': False,
                   'id_ipv6_modes': True}
         return hidden
 
@@ -356,7 +363,7 @@ class CreateNetwork(original.CreateNetwork):
             self._delete_network(request, network)
             return False
 
-    def _create_subnet(self, request, data, network=None, tenant_id=None,
+    def _create_subnet(self, request, data, network=None,
                        no_redirect=False):
         if network:
             network_id = network.id
@@ -365,22 +372,12 @@ class CreateNetwork(original.CreateNetwork):
             network_id = self.context.get('network_id')
             network_name = self.context.get('network_name')
         try:
-            if data.get('subnet_type') == 'vsd_manual':
-                vsd_subnet = request.session.get('vsd_subnet')
-                data['ip_version'] = int(data['ip_version'])
-                if data['ip_version'] == 4:
-                    data['cidr'] = vsd_subnet['cidr']
-                    data['gateway_ip'] = vsd_subnet['gateway']
-                else:
-                    data['cidr'] = vsd_subnet['ipv6_cidr']
-                    data['gateway_ip'] = vsd_subnet['ipv6_gateway']
-                request.session['vsd_subnet'] = vsd_subnet
-            else:
-                vsd_subnet = request.session.get('vsd_subnet')
+            # TODO refactoring This code is duplicated from the subnet workflow
             params = {'network_id': network_id,
                       'name': data['subnet_name'],
                       'cidr': data['cidr'],
-                      'ip_version': int(data['ip_version'])}
+                      'ip_version': int(data['ip_version']),
+                      'enable_dhcp': data['enable_dhcp']}
             if request.user.is_superuser and data.get('subnet_type') != 'os':
                 params['nuagenet'] = data['nuage_id']
                 params['net_partition'] = data['net_partition']
@@ -388,16 +385,9 @@ class CreateNetwork(original.CreateNetwork):
                     and data.get('underlay') != 'default'):
                 params['underlay'] = data['underlay']
 
-            if tenant_id:
-                params['tenant_id'] = tenant_id
-            if data['no_gateway']:
-                params['gateway_ip'] = None
-            elif data['gateway_ip'] and data.get('subnet_type') == 'os':
-                params['gateway_ip'] = data['gateway_ip']
+            params['gateway_ip'] = (
+                None if data['no_gateway'] else data['gateway_ip'])
 
-            if data.get('subnet_type') != 'os' and vsd_subnet:
-                data['enable_dhcp'] = (str(data['ip_version']) == '4' and
-                                       vsd_subnet.get('cidr') is not None)
             self._setup_subnet_parameters(params, data)
 
             subnet = neutron.subnet_create(request, **params)
