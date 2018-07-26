@@ -17,7 +17,6 @@ from django.conf import settings
 
 from dashboards.admin import networks  # noqa
 from dashboards.admin.networks import subnets  # noqa
-from dashboards.admin import routers  # noqa
 from dashboards.project import dashboard  # noqa
 from dashboards.project import gateways  # noqa
 from dashboards.project import network_topology  # noqa
