@@ -16,7 +16,7 @@
 var port_select, subnet_select, type_select, tenant_select;
 port_select = new NuageLinkedSelect({
   $source: $('#id_port_id'),
-  ajax_url: STATIC_URL + '../project/gateway_vlans/listPorts',
+  ajax_url: WEBROOT + '/project/gateway_vlans/listPorts',
   qparams: function(param){
     return {'network_id': subnet_select.get_opt().obj.network_id};
   },
@@ -26,7 +26,7 @@ port_select = new NuageLinkedSelect({
 });
 subnet_select = new NuageLinkedSelect({
   $source: $('#id_subnet_id'),
-  ajax_url: STATIC_URL + '../project/gateway_vlans/listSubnets',
+  ajax_url: WEBROOT + '/project/gateway_vlans/listSubnets',
   qparams: function(ignored){
     if (tenant_select)
       return {'tenant_id': tenant_select.get_opt().value};
