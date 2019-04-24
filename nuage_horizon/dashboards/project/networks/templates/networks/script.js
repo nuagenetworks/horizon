@@ -1,3 +1,5 @@
+var WEB_ROOT = WEBROOT.endsWith('/') ? WEBROOT.slice(0,-1) : WEBROOT;
+
 function hideTab(checked, hide_on, hide_tab) {
   if (checked == hide_on) {
     // If the checkbox is not checked then hide the tab
@@ -264,7 +266,7 @@ var ip_version_select = new NuageLinkedSelect({
 
 var subnet_select = new NuageLinkedSelect({
   $source: $('#id_sub_id'),
-  ajax_url: STATIC_URL + '../project/networks/listSubnets',
+  ajax_url: WEB_ROOT + '/project/networks/listSubnets',
   qparams: function(param){
     return {'zone_id': param};
   },
@@ -290,7 +292,7 @@ var subnet_select = new NuageLinkedSelect({
 });
 var zone_select = new NuageLinkedSelect({
   $source: $('#id_zone_id'),
-  ajax_url: STATIC_URL + '../project/networks/listZones',
+  ajax_url: WEB_ROOT + '/project/networks/listZones',
   qparams: function(param){
     return {'dom_id': param};
   },
@@ -336,7 +338,7 @@ var domain_select = new NuageLinkedSelect({
     else
       console.error('Unable to determine whether L2 or L3 domain');
   },
-  ajax_url: STATIC_URL + '../project/networks/listDomains',
+  ajax_url: WEB_ROOT + '/project/networks/listDomains',
   qparams: function (param) {
     return {'org_id': param};
   },
@@ -349,7 +351,7 @@ var domain_select = new NuageLinkedSelect({
 });
 var organisation_select = new NuageLinkedSelect({
   $source: $('#id_org_id'),
-  ajax_url: STATIC_URL + '../project/networks/listOrganizations',
+  ajax_url: WEB_ROOT + '/project/networks/listOrganizations',
   next: domain_select,
   pre_trigger: function(){
     var org_id = this.get_opt().obj['id'];
