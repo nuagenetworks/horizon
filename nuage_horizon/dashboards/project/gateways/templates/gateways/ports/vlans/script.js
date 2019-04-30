@@ -13,10 +13,12 @@
  * #    License for the specific language governing permissions and limitations
  * #    under the License.
  */
+var WEB_ROOT = WEBROOT.endsWith('/') ? WEBROOT.slice(0,-1) : WEBROOT;
+
 var port_select, subnet_select, type_select, tenant_select;
 port_select = new NuageLinkedSelect({
   $source: $('#id_port_id'),
-  ajax_url: WEBROOT + '/project/gateway_vlans/listPorts',
+  ajax_url: WEB_ROOT + '/project/gateways/ports/vlans/listPorts',
   qparams: function(param){
     return {'network_id': subnet_select.get_opt().obj.network_id};
   },
@@ -26,7 +28,7 @@ port_select = new NuageLinkedSelect({
 });
 subnet_select = new NuageLinkedSelect({
   $source: $('#id_subnet_id'),
-  ajax_url: WEBROOT + '/project/gateway_vlans/listSubnets',
+  ajax_url: WEB_ROOT + '/project/gateways/ports/vlans/listSubnets',
   qparams: function(ignored){
     if (tenant_select)
       return {'tenant_id': tenant_select.get_opt().value};
