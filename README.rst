@@ -8,8 +8,12 @@ Activate Plugin
 ---------------
 - Pull upstream Horizon
 - Have nuage_horizon available on the python path, or add it to the OpenStack Horizon folder.
-- In Horizon, edit openstack_dashboard/local/local_settings.py.
-  Add the line: HORIZON_CONFIG["customization_module"] = "nuage_horizon.customization"
+- In Horizon, edit ``openstack_dashboard/local/local_settings.py``.
+  Add the line:
+
+  ::
+
+    HORIZON_CONFIG["customization_module"] = "nuage_horizon.customization"
 
 Apache
 ------
@@ -36,7 +40,7 @@ Apache
     Alias /dashboard/static /opt/stack/horizon/static.
 
 
-  Adjust the directory permissions also by adding the following:
+-  Adjust the directory permissions also by adding the following:
 
   ::
 
