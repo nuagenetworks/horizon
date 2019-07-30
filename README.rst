@@ -33,7 +33,7 @@ Apache
   before this one:
   ::
 
-    Alias /dashboard/static /opt/stack/horizon/static.
+    Alias /dashboard/static /opt/stack/horizon/static
 
 - Adjust the directory permissions also by adding the following:
   ::
