@@ -149,7 +149,7 @@ def subnet_data(request):
     id_net = dict([(net.id, net) for net in net_list])
     subnet_list = [subnet.to_dict() for subnet in subnet_list
                    if valid_gw_subnet(subnet, id_net)]
-    response = http.HttpResponse(json.dumps(subnet_list, ensure_ascii=False))
+    response = http.JsonResponse(subnet_list, safe=False)
     return response
 
 
@@ -159,5 +159,5 @@ def port_data(request):
 
     port_list = [port.to_dict() for port in port_list
                  if (not port['device_id'])]
-    response = http.HttpResponse(json.dumps(port_list, ensure_ascii=False))
+    response = http.JsonResponse(port_list, safe=False)
     return response
