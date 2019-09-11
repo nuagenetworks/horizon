@@ -83,8 +83,7 @@ class CreateView(original.CreateView):
                                                            data['form_data'])
             data['hidden_fields'] = self.add_hidden_fields(workflow,
                                                            validate_step_end)
-            return http.HttpResponse(json.dumps(data),
-                                     content_type="application/json")
+            return http.JsonResponse(data)
         if not workflow.is_valid():
             return self.render_to_response(context)
         try:
@@ -104,7 +103,7 @@ class CreateView(original.CreateView):
             field_id = self.request.META["HTTP_X_HORIZON_ADD_TO_FIELD"]
             data = [self.get_object_id(workflow.object),
                     self.get_object_display(workflow.object)]
-            response = http.HttpResponse(json.dumps(data))
+            response = http.JsonResponse(data, safe=False)
             response["X-Horizon-Add-To-Field"] = field_id
             return response
         next_url = self.request.POST.get(workflow.redirect_param_name, None)
