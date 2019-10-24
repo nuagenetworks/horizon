@@ -15,5 +15,5 @@ urlpatterns = [
     url(GW_PORT % '$', gw_port_views.DetailView.as_view(), name='detail'),
     url(GW_PORT % 'createvlan', vlan_views.CreateView.as_view(),
         name='createvlan'),
-    url(r'^vlans/', include(vlan_urls, namespace='vlans')),
+    url(r'^vlans/', include((vlan_urls, 'vlans'), namespace='vlans')),
 ]
