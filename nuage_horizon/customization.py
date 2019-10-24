@@ -15,15 +15,15 @@ import os
 
 from django.conf import settings
 
-from dashboards.admin import networks  # noqa
-from dashboards.admin.networks import subnets  # noqa
-from dashboards.project import dashboard  # noqa
-from dashboards.project import gateways  # noqa
-from dashboards.project import network_topology  # noqa
-from dashboards.project import networks  # noqa
-from dashboards.project.networks import subnets  # noqa
-from dashboards.project import routers  # noqa
-from dashboards.project import security_groups  # noqa
+from nuage_horizon.dashboards.admin import networks  # noqa
+from nuage_horizon.dashboards.admin.networks import subnets  # noqa
+from nuage_horizon.dashboards.project import dashboard  # noqa
+from nuage_horizon.dashboards.project import gateways  # noqa
+from nuage_horizon.dashboards.project import network_topology  # noqa
+from nuage_horizon.dashboards.project import networks  # noqa
+from nuage_horizon.dashboards.project.networks import subnets  # noqa
+from nuage_horizon.dashboards.project import routers  # noqa
+from nuage_horizon.dashboards.project import security_groups  # noqa
 
 
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
