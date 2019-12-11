@@ -1,9 +1,11 @@
 {% load i18n sizeformat parse_date %}
 
 <div class="detail">
+  <td colspan="7" class="detail">
+
   <dl class="dl-horizontal">
     <dt>{% trans "Name" %}</dt>
-    <dd>{{ router.name|default:_("None") }}</dd>
+    <dd data-display="{{ router.name_or_id }}" class="word-wrap">{{ router.name|default:_("None") }}</dd>
     <dt>{% trans "ID" %}</dt>
     <dd>{{ router.id }}</dd>
     <dt>{% trans "Description" %}</dt>
@@ -18,17 +20,45 @@
       <dt>{% trans "Distributed" %}</dt>
       <dd>{{ router.distributed|yesno|capfirst }}</dd>
     {% endif %}
+    {% if router.net_partition %}
+      <dt>{% trans "Nuage Netpartition" %}</dt>
+      <dd>{{ router.netpartition|default:_("Unknown") }}</dd>
+    {% endif %}
     {% if router.rd %}
-      <dt>{% trans "Route Distinguisher" %}</dt>
+      <dt title="Nuage Route Distinguisher">{% trans "Nuage Route Distinguisher" %}</dt>
       <dd>{{ router.rd|default:_("Unknown") }}</dd>
     {% endif %}
     {% if router.rt %}
-      <dt>{% trans "Route Target" %}</dt>
+      <dt>{% trans "Nuage Route Target" %}</dt>
       <dd>{{ router.rt|default:_("Unknown") }}</dd>
     {% endif %}
     {% if router.tunnel_type %}
-      <dt>{% trans "Tunnel Type" %}</dt>
+      <dt>{% trans "Nuage Tunnel Type" %}</dt>
       <dd>{{ router.tunnel_type|default:_("Unknown") }}</dd>
+    {% endif %}
+    {% if router.nuage_backhaul_rd %}
+      <dt title="Nuage Backhaul Route Distinguisher">{% trans "Nuage Backhaul Route Distinguisher" %}</dt>
+      <dd>{{ router.nuage_backhaul_rd|default:_("Unknown") }}</dd>
+    {% endif %}
+    {% if router.nuage_backhaul_rt %}
+      <dt title="Nuage Backhaul Route Target">{% trans "Nuage Backhaul Route Target" %}</dt>
+      <dd>{{ router.nuage_backhaul_rr|default:_("Unknown") }}</dd>
+    {% endif %}
+    {% if router.nuage_backhaul_vnid %}
+      <dt>{% trans "Nuage Backhaul VNID" %}</dt>
+      <dd>{{ router.nuage_backhaul_vnid|default:_("Unknown") }}</dd>
+    {% endif %}
+        {% if router.ecmp_count %}
+      <dt>{% trans "Nuage ECMP Count" %}</dt>
+      <dd>{{ router.ecmp_count|default:_("Unknown") }}</dd>
+    {% endif %}
+    {% if router.nuage_underlay %}
+      <dt>{% trans "Nuage Underlay Routing" %}</dt>
+      <dd>{{ router.nuage_underlay|default:_("Unknown") }}</dd>
+    {% endif %}
+    {% if router.nuage_aggregate_flows %}
+      <dt>{% trans "Nuage Aggregate Flows" %}</dt>
+      <dd>{{ router.nuage_aggregate_flows|default:_("Unknown") }}</dd>
     {% endif %}
     {% if dvr_supported %}
       <dt>{% trans "Distributed" %}</dt>
