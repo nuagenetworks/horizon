@@ -289,7 +289,7 @@ var subnet_select = new NuageLinkedSelect({
     {
        return NUAGELINKEDSELECT_CONTINUE;
     }
-    else if (ip_version == 'IPv4')
+    else if (ip_version == 'IPV4')
     {
       enable_dhcp = this.get_opt().obj['enable_dhcpv4'];
     }
@@ -327,9 +327,6 @@ var domain_select = new NuageLinkedSelect({
     if(type == 'L3')
         return NUAGELINKEDSELECT_CONTINUE;
     else if (type == 'L2') {
-      // Set enable_dhcp to False if dhcp unmanaged, dhcp managed case is
-      // recalculated later on
-      $('#id_enable_dhcp').prop('checked', this.get_opt().obj['dhcp_managed']);
       if(!this.get_opt().obj['dhcp_managed'])
       {
         enable_checkbox('id_no_gateway');
@@ -342,18 +339,18 @@ var domain_select = new NuageLinkedSelect({
       subnet_select.$source.val(l2dom_id);
       $('#id_hidden_sub').val(l2dom_id);
 
-      if(this.get_opt().obj['dhcp_managed'] && this.get_opt().obj['ip_type'] == 'DUALSTACK')
+      if(this.get_opt().obj['dhcp_managed'] && this.get_opt().obj['ip_version'] == 'DUALSTACK')
         return NUAGELINKEDSELECT_SKIP2; // skip zone and subnet selection as those are for L3
       else
         {
           // Determine enable_dhcp
           var ip_version = this.get_opt().obj['ip_version'];
           var enable_dhcp;
-          if (this.get_opt().obj['dhcp_managed'])
+          if (! this.get_opt().obj['dhcp_managed'])
           {
             enable_dhcp = false
           }
-          else if (ip_version == 'IPv4')
+          else if (ip_version == 'IPV4')
           {
             enable_dhcp = this.get_opt().obj['enable_dhcpv4'];
           }
