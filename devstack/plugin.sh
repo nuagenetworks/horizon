@@ -23,7 +23,7 @@ function configure_nuage_horizon {
       local horizon_conf
       horizon_conf=$(apache_site_config_for horizon)
       sudo sh -c "sed -i '/Alias \/dashboard\/static/ i \ \ \ \ Alias $HORIZON_APACHE_ROOT/static/nuage /opt/stack/nuage-openstack-horizon/nuage_horizon/static' $horizon_conf"
-      sudo gawk -i inplace '/<\/Directory/ && !x {print;print "    <Directory /opt\/stack/nuage-horizon/>\n        Options Indexes FollowSymLinks MultiViews\n        AllowOverride None\n        Require all granted"; x=1} 1' $horizon_conf
+      sudo gawk -i inplace '/<\/Directory/ && !x {print;print "    <Directory /opt\/stack/nuage-openstack-horizon/>\n        Options Indexes FollowSymLinks MultiViews\n        AllowOverride None\n        Require all granted"; x=1} 1' $horizon_conf
     elif is_fedora || is_suse; then
        exit_distro_not_supported "horizon apache configuration"
     else
