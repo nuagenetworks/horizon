@@ -216,11 +216,10 @@ class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
                 request, id=context['org_id'])[0]
             request.session['vsd_subnet'] = vsd_subnet
             request.session['vsd_organisation'] = vsd_organisation
-
-            if not self.data['ip_version_']:
+            if not self.data['hidden_ip_version_']:
                 ip_version = '4'
             else:
-                ip_version = self.data['ip_version_']
+                ip_version = self.data['hidden_ip_version_']
 
             if str(ip_version) == '4':
                 cidr = vsd_subnet['cidr']
