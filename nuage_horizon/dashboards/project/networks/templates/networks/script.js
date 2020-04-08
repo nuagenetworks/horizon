@@ -292,13 +292,16 @@ var subnet_select = new NuageLinkedSelect({
     else if (ip_version == 'IPV4')
     {
       enable_dhcp = this.get_opt().obj['enable_dhcpv4'];
+      fill_gateway(4);
+      $('#id_hidden_ip_version_').val(4);
     }
     else
     {
       enable_dhcp = this.get_opt().obj['enable_dhcpv6'];
+      fill_gateway(6);
+      $('#id_hidden_ip_version_').val(6);
     }
     $('#id_enable_dhcp').prop('checked', enable_dhcp);
-    fill_gateway(4);
     return NUAGELINKEDSELECT_ABORT;
   },
   callback: callback($('#id_hidden_sub'))
@@ -349,17 +352,22 @@ var domain_select = new NuageLinkedSelect({
           if (! this.get_opt().obj['dhcp_managed'])
           {
             enable_dhcp = false
+            // Set gateway to None
+            fill_gateway(null)
           }
           else if (ip_version == 'IPV4')
           {
             enable_dhcp = this.get_opt().obj['enable_dhcpv4'];
+            fill_gateway(4);
+            $('#id_hidden_ip_version_').val(4);
           }
           else
           {
             enable_dhcp = this.get_opt().obj['enable_dhcpv6'];
+            fill_gateway(6)
+            $('#id_hidden_ip_version_').val(6);
           }
           $('#id_enable_dhcp').prop('checked', enable_dhcp);
-          fill_gateway(4);
           return NUAGELINKEDSELECT_ABORT; // no cidr selection needed
         }
     }
