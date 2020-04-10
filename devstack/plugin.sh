@@ -19,13 +19,10 @@
 function configure_nuage_horizon {
     local local_settings=$HORIZON_DIR/openstack_dashboard/local/local_settings.py
     _horizon_config_set $local_settings "" HORIZON_CONFIG[\'customization_module\'] \"nuage_horizon.customization\"
-    if is_ubuntu; then
-      local horizon_conf
-      horizon_conf=$(apache_site_config_for horizon)
-      sudo sh -c "sed -i '/Alias \/dashboard\/static/ i \ \ \ \ Alias $HORIZON_APACHE_ROOT/static/nuage /opt/stack/nuage-openstack-horizon/nuage_horizon/static' $horizon_conf"
-      sudo gawk -i inplace '/<\/Directory/ && !x {print;print "    <Directory /opt\/stack/nuage-openstack-horizon/>\n        Options Indexes FollowSymLinks MultiViews\n        AllowOverride None\n        Require all granted"; x=1} 1' $horizon_conf
-    elif is_fedora || is_suse; then
-       exit_distro_not_supported "horizon apache configuration"
+    local horizon_conf=$(apache_site_config_for horizon)
+    if is_ubuntu || is_fedora || is_suse; then
+       sudo sh -c "sed -i '/Alias \/dashboard\/static/i \ \ \ \ Alias $HORIZON_APACHE_ROOT/static/nuage /opt/stack/nuage-openstack-horizon/nuage_horizon/static' $horizon_conf"
+       sudo sh -c "sed -i '/<Directory \/opt\/stack\/horizon/i \ \ \ \ <Directory /opt/stack/nuage-openstack-horizon/>\n        Options Indexes FollowSymLinks MultiViews\n        AllowOverride None\n        Require all granted\n    </Directory>' $horizon_conf"
     else
        exit_distro_not_supported "horizon apache configuration"
     fi
@@ -35,6 +32,12 @@ if [[ "$1" == "stack" ]]; then
     if [[ "$2" == "install" ]]; then
         echo_summary "Installing Nuage Horizon plugin"
         pip_install -r $NUAGE_HORIZON_DIR/requirements.txt -e $NUAGE_HORIZON_DIR -c $REQUIREMENTS_DIR/upper-constraints.txt
+        if is_fedora && python3_enabled; then
+          os=$(eval $"rpm -E '%{?centos:centos}%{!?centos:rhel}%{rhel}'")
+          install_package "https://$os.iuscommunity.org/ius-release.rpm"
+          install_package "python${PYTHON3_VERSION//./}u-mod_wsgi"
+          uninstall_package "mod_wsgi"
+        fi
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then
         configure_nuage_horizon
     fi
