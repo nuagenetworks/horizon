@@ -204,6 +204,15 @@ def nuage_security_group_update(request, sg_id, params):
     return NuageSecurityGroup(sg)
 
 
+def nuage_netpartitions_list(request, **params):
+    LOG.debug("nuage_netpartitions_list(): params=%s",
+              params)
+    netpartitions = neutronclient(request).list(
+        'net_partitions', '/net_partitions/', True,
+        **params).get('net_partitions')
+    return [NuageNetpartition(netpart) for netpart in netpartitions]
+
+
 class VsdOrganisation(NeutronAPIDictWrapper):
     pass
 
@@ -243,4 +252,8 @@ class NuageGatewayVport(NeutronAPIDictWrapper):
 
 
 class NuageSecurityGroup(NeutronAPIDictWrapper):
+    pass
+
+
+class NuageNetpartition(NeutronAPIDictWrapper):
     pass
