@@ -32,12 +32,6 @@ if [[ "$1" == "stack" ]]; then
     if [[ "$2" == "install" ]]; then
         echo_summary "Installing Nuage Horizon plugin"
         pip_install -r $NUAGE_HORIZON_DIR/requirements.txt -e $NUAGE_HORIZON_DIR -c $REQUIREMENTS_DIR/upper-constraints.txt
-        if is_fedora && python3_enabled; then
-          os=$(eval $"rpm -E '%{?centos:centos}%{!?centos:rhel}%{rhel}'")
-          install_package "https://$os.iuscommunity.org/ius-release.rpm"
-          install_package "python${PYTHON3_VERSION//./}u-mod_wsgi"
-          uninstall_package "mod_wsgi"
-        fi
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then
         configure_nuage_horizon
     fi
