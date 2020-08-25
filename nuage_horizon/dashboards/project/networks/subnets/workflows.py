@@ -44,14 +44,14 @@ class CreateSubnetInfoAction(nuage_net_workflows.CreateSubnetInfoAction):
 
     class Meta:
         name = _("Subnet")
-        help_text = _('Create a subnet associated with the new network.')
+        help_text = _('Create a subnet associated with the network.')
 
 
 class CreateSubnetInfo(workflows.Step):
     action_class = CreateSubnetInfoAction
     contributes = ("subnet_name", "cidr", "ip_version", "gateway_ip",
                    "no_gateway", "nuage_id", "net_partition")
-    depends_on = ("network_id",)
+    depends_on = ("network",)
 
 
 class CreateSubnet(original.CreateSubnet):
@@ -83,7 +83,13 @@ class CreateSubnet(original.CreateSubnet):
         pass
 
     def handle(self, request, data):
-        network_id = self.context.get('network_id')
+        network = self.context_seed['network']
+        if network:
+            network_id = network.id
+            network_name = network.name
+        else:
+            network_id = self.context.get('network_id')
+            network_name = self.context.get('network_name')
         try:
             params = {'network_id': network_id,
                       'name': data['subnet_name'],

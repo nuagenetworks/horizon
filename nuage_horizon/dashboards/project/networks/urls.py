@@ -29,6 +29,7 @@ for i, pattern in enumerate(original.urlpatterns):
                                       subnet_views.CreateView.as_view(),
                                       name='createsubnet')
 
+
 original.urlpatterns.append(
     url(r'^listOrganizations', views.organization_data,
         name='listOrganizations'))
