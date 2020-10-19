@@ -5,6 +5,7 @@ Horizon Extension for Nuage Networks
 
 Activate Plugin
 ---------------
+
 - Pull upstream Horizon
 - Have nuage_horizon available on the python path, or add it to the OpenStack
   Horizon folder.
@@ -15,11 +16,11 @@ Activate Plugin
 
     HORIZON_CONFIG["customization_module"] = "nuage_horizon.customization"
 
-Apache
-------
+httpd
+-----
 
-- An alias should be added to horizon's config file in apache.
-  The path could be ``/etc/apache2/sites-enabled/horizon.conf``
+- An alias should be added to horizon's config file in httpd.
+  The path could be ``/etc/httpd/conf.d/horizon.conf``
   ::
 
     Alias /<webapp-root>/static/nuage <nuage_horizon-install-path>/static
@@ -27,7 +28,7 @@ Apache
   On a devstack setup this may look like:
   ::
 
-    Alias /dashboard/static/nuage /opt/stack/nuage-horizon/nuage_horizon/static
+    Alias /dashboard/static/nuage /opt/stack/nuage-openstack-horizon/nuage_horizon/static
 
   There probably is a pre-existing alias, the Nuage alias should be added
   before this one:
@@ -38,7 +39,7 @@ Apache
 - Adjust the directory permissions also by adding the following:
   ::
 
-    <Directory /opt/stack/nuage-horizon/>
+    <Directory /opt/stack/nuage-openstack-horizon/>
         Options Indexes FollowSymLinks MultiViews
         AllowOverride None
         # Apache 2.4 uses mod_authz_host for access control now (instead of "Allow")
@@ -51,4 +52,4 @@ Apache
         </IfVersion>
     </Directory>
 
-- Restart service apache2.
+- Restart service httpd.
