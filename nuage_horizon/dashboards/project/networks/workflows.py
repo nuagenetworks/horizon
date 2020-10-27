@@ -1,3 +1,17 @@
+# Copyright 2020 Nokia.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 import logging
 
 from django.utils.translation import ugettext_lazy as _
@@ -174,7 +188,8 @@ class CreateSubnetInfoAction(original.CreateSubnetInfoAction):
                     'subnet_name': shown,
                     'id_cidr': shown,
                     'id_ip_version': shown,
-                    'id_gateway_ip': shown if context['hidden_gateway_'] else hidden,
+                    'id_gateway_ip': shown if
+                    context['hidden_gateway_'] else hidden,
                     'id_no_gateway': shown,
                     'address_source': context['enable_dhcp']}  # managed
 
@@ -258,8 +273,9 @@ class CreateSubnetDetailAction(original.CreateSubnetDetailAction):
                                                        **kwargs)
         if context.get('nuage_id') and context['nuage_id'] != ".":
             try:
-                vsd_subnet = neutron.vsd_subnet_get(request, context['nuage_id'])
-            except Exception as e:
+                vsd_subnet = neutron.vsd_subnet_get(request,
+                                                    context['nuage_id'])
+            except Exception:
                 msg = "Failed to find Nuage UUID {} on VSD"\
                     .format(context['nuage_id'])
                 exceptions.handle(request, msg, redirect=False)
@@ -372,7 +388,8 @@ class CreateNetwork(original.CreateNetwork):
             network_id = self.context.get('network_id')
             network_name = self.context.get('network_name')
         try:
-            # TODO refactoring This code is duplicated from the subnet workflow
+            # TODO(team) refactoring This code is duplicated from
+            # the subnet workflow
             params = {'network_id': network_id,
                       'name': data['subnet_name'],
                       'cidr': data['cidr'],

@@ -14,10 +14,10 @@
 
 from openstack_dashboard.dashboards.admin.networks \
     import views as original_admin
-from nuage_horizon.dashboards.project.networks import views as project_views
 
 from nuage_horizon.dashboards.admin.networks import tabs
 from nuage_horizon.dashboards.admin.networks import workflows
+from nuage_horizon.dashboards.project.networks import views as project_views
 
 
 class NuageDetailView(original_admin.DetailView):

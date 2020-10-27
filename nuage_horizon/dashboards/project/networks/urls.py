@@ -11,12 +11,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 from django.conf.urls import url
 from openstack_dashboard.dashboards.project.networks import urls as original
 
-from nuage_horizon.dashboards.project.networks import views
 from nuage_horizon.dashboards.project.networks.subnets \
     import views as subnet_views
+from nuage_horizon.dashboards.project.networks import views
 
 
 for i, pattern in enumerate(original.urlpatterns):

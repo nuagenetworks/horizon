@@ -12,7 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from openstack_dashboard.api.neutron import *  # noqa
+import logging
+
+from openstack_dashboard.api.neutron import NeutronAPIDictWrapper
+from openstack_dashboard.api.neutron import neutronclient
 
 LOG = logging.getLogger(__name__)
 

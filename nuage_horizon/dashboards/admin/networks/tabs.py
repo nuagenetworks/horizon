@@ -11,14 +11,14 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from openstack_dashboard.dashboards.admin.networks import views
 
-from openstack_dashboard.dashboards.admin.networks.agents import tabs \
-    as agents_tabs
 from nuage_horizon.dashboards.project.networks.subnets import tabs as \
     subnets_tabs
+from openstack_dashboard.dashboards.admin.networks.agents import tabs \
+    as agents_tabs
 from openstack_dashboard.dashboards.admin.networks.ports \
     import tables as ports_tables
+from openstack_dashboard.dashboards.admin.networks import views
 
 
 class NetworkDetailsTabs(views.NetworkDetailsTabs):

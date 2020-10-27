@@ -11,8 +11,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from django.urls import reverse
+
 from django import http
+from django.urls import reverse
 
 from mox import IsA  # noqa
 

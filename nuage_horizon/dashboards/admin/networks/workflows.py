@@ -16,9 +16,9 @@ from django.urls import reverse
 from openstack_dashboard.dashboards.admin.networks import \
     workflows as original
 
+from nuage_horizon.dashboards.admin.networks import forms
 from nuage_horizon.dashboards.project.networks import \
     workflows as project_workflows
-from nuage_horizon.dashboards.admin.networks import forms
 
 
 class NuageCreateNetwork(project_workflows.CreateNetwork):

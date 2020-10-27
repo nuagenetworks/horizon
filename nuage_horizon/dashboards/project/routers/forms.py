@@ -1,3 +1,17 @@
+# Copyright 2020 Nokia.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 import logging
 
 from django.urls import reverse
@@ -113,7 +127,8 @@ class NuageRouterCreateForm(original.CreateForm):
 
             # Nuage specific resources
             if request.user.is_superuser:
-                if data.get('netpartition') and data['netpartition'] != 'default':
+                if (data.get('netpartition')
+                        and data['netpartition'] != 'default'):
                     params['net_partition'] = data['netpartition']
                 if data.get('router_template'):
                     params['nuage_router_template'] = data['router_template']
@@ -121,7 +136,8 @@ class NuageRouterCreateForm(original.CreateForm):
                     params['rd'] = data['rd']
                 if data.get('rt'):
                     params['rt'] = data['rt']
-                if data.get('tunnel_type') and data['tunnel_type'] != 'default':
+                if (data.get('tunnel_type')
+                        and data['tunnel_type'] != 'default'):
                     params['tunnel_type'] = data['tunnel_type']
                 if data.get('backhaul_rd'):
                     params['backhaul_rd'] = data['backhaul_rd']
@@ -133,8 +149,8 @@ class NuageRouterCreateForm(original.CreateForm):
                     params['ecmp_count'] = data['ecmp_count']
                 if data.get('underlay') and data['underlay'] != 'default':
                     params['nuage_underlay'] = data['underlay']
-                if (data.get('aggregate_flows') and
-                        data['aggregate_flows'] != 'default'):
+                if (data.get('aggregate_flows')
+                        and data['aggregate_flows'] != 'default'):
                     params['nuage_aggregate_flows'] = data['aggregate_flows']
 
             router = api.neutron.router_create(request, **params)
@@ -213,8 +229,8 @@ class NuageRouterUpdateForm(original.UpdateForm):
             del self.fields['ecmp_count']
             del self.fields['underlay']
             del self.fields['aggregate_flows']
-        if (not request.user.is_superuser or
-                kwargs['initial']['enable_snat'] is None):
+        if (not request.user.is_superuser
+                or kwargs['initial']['enable_snat'] is None):
             del self.fields['enable_snat']
 
     def handle(self, request, data):

@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 from django.utils.translation import ugettext_lazy as _
 
 import horizon
@@ -20,6 +21,7 @@ class GatewayPanels(horizon.PanelGroup):
     slug = "gateway"
     name = _("Gateway")
     panels = ('gateways',)
+
 
 project = horizon.get_dashboard('project')
 

@@ -12,9 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
-
-from django import forms
 from openstack_dashboard.dashboards.project.security_groups \
     import views as original
 

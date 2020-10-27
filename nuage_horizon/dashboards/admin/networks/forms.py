@@ -15,8 +15,8 @@
 import logging
 
 from django.utils.translation import ugettext_lazy as _
-from openstack_dashboard.dashboards.admin.networks import forms as original
 from horizon import forms
+from openstack_dashboard.dashboards.admin.networks import forms as original
 
 LOG = logging.getLogger(__name__)
 
