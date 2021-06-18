@@ -12,10 +12,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+# flake8: noqa
+
 import logging
 
-from openstack_dashboard.api.neutron import NeutronAPIDictWrapper
-from openstack_dashboard.api.neutron import neutronclient
+# DO NOT REMOVE: This allows users to do neutron.get_subnets although it
+# is not implemented here.
+from openstack_dashboard.api.neutron import *  # noqa
 
 LOG = logging.getLogger(__name__)
 
